@@ -4,6 +4,7 @@
   "description": "Synthetic Monitoring",
   "main": "index.js",
   "scripts": {
+    "server": "node src/server/index.js",
     "test": "npm run check-format",
     "check-format": "prettier --check \"**/*.js\"",
     "format-code": "prettier --write \"**/*.js\""
