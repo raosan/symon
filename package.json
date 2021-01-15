@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/hyperjumptech/symon/issues"
   },
-  "homepage": "https://github.com/hyperjumptech/symon#readme"
+  "homepage": "https://github.com/hyperjumptech/symon#readme",
+  "devDependencies": {
+    "prettier": "~2.2.1"
+  }
 }
