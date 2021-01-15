@@ -1,0 +1,17 @@
+{
+  "name": "symon",
+  "version": "0.0.1",
+  "description": "Synthetic Monitoring",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperjumptech/symon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hyperjumptech/symon/issues"
+  },
+  "homepage": "https://github.com/hyperjumptech/symon#readme"
+}
