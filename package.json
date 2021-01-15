@@ -16,6 +16,9 @@
     "url": "https://github.com/hyperjumptech/symon/issues"
   },
   "homepage": "https://github.com/hyperjumptech/symon#readme",
+  "dependencies": {
+    "express": "~4.17.1"
+  },
   "devDependencies": {
     "prettier": "~2.2.1"
   },
