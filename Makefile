@@ -17,4 +17,5 @@
 .PHONY: all test build
 
 test:
-	echo "TEST"
+	npm ci
+	npm test

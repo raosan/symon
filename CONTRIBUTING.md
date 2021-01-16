@@ -7,7 +7,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Fork Process
 
-1. Ensure that you've installed the necessary tools in your system.
+1. Ensure that you've installed the necessary tools in your system (eg, node-js and npm).
 2. Fork this project into your own Github account.
 3. When forking is done, clone `symon` from your account.
 
@@ -36,7 +36,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 8. Remember to pull from your upstream often.
 
     ```git
-    git pull upstream master
+    git pull upstream main
     ```
 
 ## Pull Request Process
@@ -44,9 +44,9 @@ Please note we have a code of conduct, please follow it in all your interactions
 1. Make sure you always have the most recent update from your upstream.
 
     ```git
-    git pull upstream master
+    git pull upstream main
     ```
-
+    
 2. Resolve all conflict, if any.
 3. Make sure `make test` always successful (you wont be able to create pull request if this fail, circle-ci, travis-ci and azure-devops will make sure of this.)
 4. Push your code to your project's master repository.
