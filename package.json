@@ -4,6 +4,7 @@
   "description": "Synthetic Monitoring",
   "main": "index.js",
   "scripts": {
+    "client": "webpack serve --progress --profile --watch --content-base src/ ",
     "server": "node src/server/index.js",
     "test": "npm run check-format",
     "check-format": "prettier --check \"**/*.js\"",
