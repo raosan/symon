@@ -21,7 +21,7 @@ Run the application:
 ```
 npm start
 ```
-and open localhost:8080 with a web browser.
+and open localhost:4000 with a web browser.
 
 
 To format the code according to the style guide:

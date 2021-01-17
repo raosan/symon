@@ -18,4 +18,17 @@ module.exports = {
       template: "./src/client/index.html",
     }),
   ],
+  devServer: {
+    port: 4000,
+    contentBase: "src/",
+    historyApiFallback: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        pathRewrite: {
+          "^/api": "",
+        },
+      },
+    },
+  },
 };
