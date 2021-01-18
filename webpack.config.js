@@ -5,7 +5,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: "./src/client/index.tsx",
   output: {
-    filename: "./dist/bundle.js",
+    filename: "./static/js/bundle.js",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
