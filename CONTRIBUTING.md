@@ -58,3 +58,37 @@ Please note we have a code of conduct, please follow it in all your interactions
     * Change the source head repository from your fork and target is `hyperjumptech/symon`
     * Hit the `Create pull request` button
     * Fill in all necessary information to help us understand about your pull request.
+
+### Important
+
+**All test must succeed**
+
+Always make sure that you have tested the code in your machine before making a pull request.
+Asking to pull request for codes that do not pass test is NOT RIGHT. 
+Always make sure `make test` result a success prior making PR
+
+**License Notification**
+
+When you add a new source code into this project, always add a license notice at the beginning of your
+source code file as follows
+
+```
+/**********************************************************************************
+ *                                                                                *
+ *    Copyright (C) 2021  SYMON Contributors                                      *
+ *                                                                                *
+ *   This program is free software: you can redistribute it and/or modify         *
+ *   it under the terms of the GNU Affero General Public License as published     *
+ *   by the Free Software Foundation, either version 3 of the License, or         *
+ *   (at your option) any later version.                                          *
+ *                                                                                *
+ *   This program is distributed in the hope that it will be useful,              *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ *   GNU Affero General Public License for more details.                          *
+ *                                                                                *
+ *   You should have received a copy of the GNU Affero General Public License     *
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.       *
+ *                                                                                *
+ **********************************************************************************/
+```
