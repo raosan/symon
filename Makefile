@@ -16,6 +16,12 @@
 
 .PHONY: all test build
 
-test:
+format:
+	npm run format-code
+
+test: format
 	npm ci
 	npm test
+
+run: test
+	npm start

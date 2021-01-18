@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Released]
 
+### [v0.0.1] - <yyyy-mm-dd>
+
+#### Added
+
+- Boiler plate code with NodeJS
+- Backend API with ExpressJS
+- Skeleton Client API
+
+---
+
 ### [<version>] - <yyyy-mm-dd>
 
 #### Fixed
