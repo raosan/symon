@@ -28,3 +28,13 @@ To format the code according to the style guide:
 ```
 npm run format-code
 ```
+
+
+## Storybook
+
+Storybook helps you document components for reuse and automatically visually test your components to prevent bugs.
+
+To start Storybook locally:
+```
+npm run storybook
+```
