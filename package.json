@@ -6,7 +6,8 @@
   "scripts": {
     "start": "concurrently --kill-others -p name -n 'server,client' -c 'blue,green' 'npm run server' 'npm run client'",
     "client": "webpack serve --progress --profile --watch --content-base src/ ",
-    "server": "node src/server/index.js",
+    "server": "npm run server:build && node build/server/index.js",
+    "server:build": "tsc",
     "test": "npm run check-format",
     "check-format": "prettier --check \"**/*.js\"",
     "format-code": "prettier --write \"**/*.js\""
@@ -25,6 +26,7 @@
     "react-dom": "~17.0.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.11",
     "@types/react": "~17.0.0",
     "@types/react-dom": "~17.0.0",
     "concurrently": "~5.3.0",
