@@ -1,18 +1,15 @@
 {
-    "compilerOptions": {
-      "esModuleInterop": true,
-      "jsx": "react",
-      "module": "commonjs",
-      "noImplicitAny": true,
-      "outDir": "./build/",
-      "preserveConstEnums": true,
-      "removeComments": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "es5"
-    },
-    "include": [
-      "./src/client/**/**/*",
-      "./src/server/**/**/*"
-    ]
-  }
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./build/",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es5"
+  },
+  "include": ["./src/client/**/**/*", "./src/server/**/**/*"]
+}
