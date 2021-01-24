@@ -17,6 +17,11 @@ After cloning this repo, install the dependencies:
 npm install
 ```
 
+Copy the environment variables configuration:
+```
+cp .env.example .env
+```
+
 Run the application:
 ```
 npm start

@@ -19,12 +19,45 @@
 
 import express from "express";
 
-const app = express();
+import { cfg } from "../config";
+import * as http from "http";
+
+import {
+  requestLogger,
+  expressErrorLogger, 
+  logger
+} from "../utils/logger"
+import bodyParser = require("body-parser");
+
+const app: express.Application = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(requestLogger)
+app.use(expressErrorLogger)
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(process.env.PORT || 8080, () =>
-  console.log(`Listening on port ${process.env.PORT || 8080}!`),
-);
+let server: http.Server ;
+(async() => {
+    server = app.listen(cfg.port || 8080, () => {
+        logger.info(
+            `  Listening on port ${cfg.port || 8080} in ${cfg.env} mode`
+        )
+        logger.info('  Press CTRL-C to stop\n')
+    });
+})();
+
+const stopServer = async() => {
+    logger.info('  Shutting down the server . . .')
+    if (server.listening) {
+        logger.close();
+        server.close();
+    }
+};
+
+// gracefully shutdown system if these processes is occured
+process.on('SIGINT', stopServer);
+process.on('SIGTERM', stopServer);
