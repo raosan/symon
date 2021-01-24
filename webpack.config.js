@@ -17,7 +17,6 @@
  *                                                                                *
  **********************************************************************************/
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
