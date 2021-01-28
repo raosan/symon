@@ -43,3 +43,13 @@ To start Storybook locally:
 ```
 npm run storybook
 ```
+
+## Integration test
+
+To run integration test locally, first open cypress:
+
+```
+npm run cypress:open
+```
+
+then in Tests tab, click the file you want to test

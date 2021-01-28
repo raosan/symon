@@ -121,3 +121,6 @@ dist
 
 # Typescript build output
 build/
+
+#  Cypress
+cypress/integration/examples
