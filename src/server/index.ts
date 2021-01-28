@@ -18,46 +18,43 @@
  **********************************************************************************/
 
 import express from "express";
+import swaggerUi from "swagger-ui-express";
+import * as swaggerDocument from "../../swagger.json";
 
 import { cfg } from "../config";
 import * as http from "http";
 
-import {
-  requestLogger,
-  expressErrorLogger, 
-  logger
-} from "../utils/logger"
+import { requestLogger, expressErrorLogger, logger } from "../utils/logger";
 import bodyParser = require("body-parser");
 
 const app: express.Application = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger)
-app.use(expressErrorLogger)
+app.use(requestLogger);
+app.use(expressErrorLogger);
 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-let server: http.Server ;
-(async() => {
-    server = app.listen(cfg.port || 8080, () => {
-        logger.info(
-            `  Listening on port ${cfg.port || 8080} in ${cfg.env} mode`
-        )
-        logger.info('  Press CTRL-C to stop\n')
-    });
+let server: http.Server;
+(async () => {
+  server = app.listen(cfg.port || 8080, () => {
+    logger.info(`  Listening on port ${cfg.port || 8080} in ${cfg.env} mode`);
+    logger.info("  Press CTRL-C to stop\n");
+  });
 })();
 
-const stopServer = async() => {
-    logger.info('  Shutting down the server . . .')
-    if (server.listening) {
-        logger.close();
-        server.close();
-    }
+const stopServer = async () => {
+  logger.info("  Shutting down the server . . .");
+  if (server.listening) {
+    logger.close();
+    server.close();
+  }
 };
 
 // gracefully shutdown system if these processes is occured
-process.on('SIGINT', stopServer);
-process.on('SIGTERM', stopServer);
+process.on("SIGINT", stopServer);
+process.on("SIGTERM", stopServer);

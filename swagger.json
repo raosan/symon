@@ -1,0 +1,52 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "description": "Synthetic Monitoring by Hyperjump",
+    "version": "0.0.1",
+    "title": "Synthetic Monitoring API Hub",
+    "contact": {
+      "email": "oss@hyperjump.tech"
+    }
+  },
+  "tags": [
+    {
+      "name": "general",
+      "description": "General APIs"
+    },
+    {
+      "name": "user",
+      "description": "Users APIs"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["general"],
+        "summary": "Hello API",
+        "operationId": "rootId",
+        "description": "Hello, example API.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/exampleSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "exampleSchema": {
+        "type": "string",
+        "example": "Hello World!"
+      }
+    }
+  }
+}
