@@ -59,6 +59,13 @@ Please note we have a code of conduct, please follow it in all your interactions
     * Hit the `Create pull request` button
     * Fill in all necessary information to help us understand about your pull request.
 
+If you notice that your Pull Request's check action/workflow never run, 
+please check in your **forked** symon repository, on the "Setting" > "Actions" tab, go to 
+"Fork pull request workflows" section and enable the "Run workflows from 
+fork pull requests", "Send write tokens to workflows from fork pull requests" and "Send secrets to workflows from fork pull requests" checkboxes. 
+And then click "Save". Remove your pull request, and create a new one.
+
+
 ### Important
 
 **All test must succeed**
