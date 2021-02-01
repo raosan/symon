@@ -19,7 +19,7 @@
 
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "../../swagger.json";
+import * as swaggerDocument from "./swagger.json";
 
 import { cfg } from "../config";
 import * as http from "http";
