@@ -17,49 +17,51 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import { PrismaClient } from "@prisma/client";
+import { User, UserInput, UserUpdate } from "./entity";
 
-import { cfg } from "../config";
-import * as http from "http";
+const prisma = new PrismaClient();
 
-import { requestLogger, expressErrorLogger, logger } from "../utils/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
+export class Repository {
+  async users(): Promise<User[]> {
+    const data = await prisma.user.findMany();
 
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
+    return data;
   }
-};
 
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+  async userByID(id: number): Promise<User | null> {
+    const data = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return data;
+  }
+
+  async create(userInput: UserInput): Promise<User> {
+    const data = await prisma.user.create({
+      data: userInput,
+    });
+
+    return data;
+  }
+
+  async update(userUpdate: UserUpdate): Promise<User> {
+    const { id, ...newData } = userUpdate;
+    const data = await prisma.user.update({
+      where: { id },
+      data: newData,
+    });
+
+    return data;
+  }
+
+  async delete(id: number): Promise<number> {
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    return id;
+  }
+}

@@ -17,49 +17,29 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+export enum commonHTTPErrors {
+  badRequest = 400,
+  notFound = 404,
+  unprocessableEntity = 422,
+}
 
-import { cfg } from "../config";
-import * as http from "http";
+export class AppError extends Error {
+  public readonly httpErrorCode: commonHTTPErrors;
+  public readonly isOperational: boolean;
 
-import { requestLogger, expressErrorLogger, logger } from "../utils/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
+  constructor(
+    httpErrorCode: number,
+    description: string,
+    isOperational: boolean,
+  ) {
+    super(description);
 
-const app: express.Application = express();
-const port = cfg.port || 8080;
+    // restore prototype chain
+    Object.setPrototypeOf(this, new.target.prototype);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
+    this.httpErrorCode = httpErrorCode;
+    this.isOperational = isOperational;
 
-app.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
+    Error.captureStackTrace(this);
   }
-};
-
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+}

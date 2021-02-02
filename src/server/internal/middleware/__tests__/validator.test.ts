@@ -17,49 +17,62 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import express, { Request, Response, NextFunction } from "express";
+import bodyParser from "body-parser";
+import Joi from "joi";
+import faker from "faker";
+import request from "supertest";
+import { AppError } from "../../app-error";
+import validate from "../validator";
 
-import { cfg } from "../config";
-import * as http from "http";
-
-import { requestLogger, expressErrorLogger, logger } from "../utils/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
-
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
+describe("Validator middleware", () => {
+  const schema = Joi.object().keys({
+    email: Joi.string().required().label("Email"),
+    password: Joi.string().required().label("Password"),
   });
-})();
 
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
-  }
-};
+  it("should return http status 200", async () => {
+    // arrange
+    const app = express();
 
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+    app.use(bodyParser.json());
+    app.get("/v1/users", validate(schema), (_, res) => {
+      res.sendStatus(200);
+    });
+
+    // act
+    const res = await request(app).get("/v1/users").send({
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    });
+
+    // assert
+    expect(res.status).toBe(200);
+  });
+
+  it("should return http status 400", async () => {
+    // arrange
+    const app = express();
+
+    app.use(bodyParser.json());
+    app.get("/v1/users", validate(schema), (_, res) => {
+      res.sendStatus(200);
+    });
+    app.use((err: AppError, _: Request, res: Response, next: NextFunction) => {
+      if (err) {
+        res.status(err.httpErrorCode).send({
+          message: err.message,
+        });
+      }
+      next();
+    });
+
+    // act
+    const res = await request(app).get("/v1/users").send({
+      email: faker.internet.email(),
+    });
+
+    // assert
+    expect(res.status).toBe(400);
+  });
+});

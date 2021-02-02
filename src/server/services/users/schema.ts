@@ -17,49 +17,14 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import Joi from "joi";
 
-import { cfg } from "../config";
-import * as http from "http";
+export const storeSchema = Joi.object().keys({
+  email: Joi.string().required().label("Email"),
+  password: Joi.string().required().label("Password"),
+});
 
-import { requestLogger, expressErrorLogger, logger } from "../utils/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
-
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
-  }
-};
-
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+export const updateSchema = Joi.object().keys({
+  enabled: Joi.number().allow(0, 1).required().label("Enabled"),
+  suspended: Joi.number().allow(0, 1).required().label("Suspended"),
+});
