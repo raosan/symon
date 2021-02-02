@@ -53,3 +53,14 @@ npm run cypress:open
 ```
 
 then in Tests tab, click the file you want to test
+
+
+## Building for production
+
+### Client
+
+run `npm run client:build`. The client bundle will be available in `./dist` directory.
+
+### Server
+
+run `npm run server:build`.
