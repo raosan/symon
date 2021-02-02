@@ -14,29 +14,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-server {
-    listen      80;
-    listen      [::]:80;
-    server_name localhost;
+FROM node:lts
 
-    # Security
-    include     configs/security.conf;
+WORKDIR /usr/app/symon
 
-    # Logging
-    access_log  /var/log/nginx/symon-access.log;
-    error_log   /var/log/nginx/symon-error.log warn;
+# Copy files needed
+COPY package-lock.json .
+COPY package.json .
+COPY postcss.config.js .
+COPY tailwind.config.js .
+COPY tsconfig.json .
+COPY webpack.config.js .
 
-    # reverse proxy
-    location / {
-        proxy_pass http://127.0.0.1:4000;
-        include    configs/proxy.conf;
-    }
+# Copy the client code
+RUN mkdir src
+COPY src/client src/client
 
-    location /api {
-        proxy_pass http://127.0.0.1:8080/;
-        include    configs/proxy.conf;
-    }
+RUN npm ci
 
-    # additional config
-    include configs/general.conf;
-}
+# Open port 4000
+EXPOSE 4000
+
+CMD ["npm", "run", "client"]

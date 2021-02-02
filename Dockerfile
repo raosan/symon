@@ -1,25 +1,19 @@
-# Use NGINX Alpine Stable
-FROM nginx:stable-alpine
+#    SYMON
+#    Copyright (C) 2021  SYMON Contributors
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-WORKDIR /usr/src/app
+FROM alpine:3.7
 
-# Copy source files
-COPY . .
-
-# Install npm, supervisor
-RUN apk add --update npm supervisor
-
-# Install dependencies
-RUN npm ci
-
-# Delete existing NGINX conf and copy NGINX conf from src folder
-COPY src/nginx /etc/nginx/
-
-# Copy supervisor conf
-COPY supervisord.conf /etc/supervisord.conf
-
-# Expose port
-EXPOSE 80
-
-# Run the app
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["echo", "This Dockerfile is only for triggering Dokku deployment"]
