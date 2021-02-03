@@ -50,6 +50,12 @@ module.exports = {
         "prettier/@typescript-eslint",
       ],
       plugins: ["react", "react-hooks", "@typescript-eslint"],
+      rules: {
+        "prettier/prettier": "error",
+        "react/prop-types": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-uses-react": "off",
+      },
       settings: { react: { version: "detect" } },
     },
   ],

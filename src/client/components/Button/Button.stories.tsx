@@ -17,26 +17,33 @@
  *                                                                                *
  **********************************************************************************/
 
-import React from "react";
-// also exported from '@storybook/react' if you can deal with breaking changes in 6.1
 import { Story, Meta } from "@storybook/react/types-6-0";
 
-import { Page, PageProps } from "./Page";
-import * as HeaderStories from "./Header.stories";
+import { Button, ButtonProps } from "./Button";
 
 export default {
-  title: "Example/Page",
-  component: Page,
+  title: "Button",
+  component: Button,
 } as Meta;
 
-const Template: Story<PageProps> = args => <Page {...args} />;
+const Template: Story<ButtonProps> = args => <Button {...args} />;
 
-export const LoggedIn = Template.bind({});
-LoggedIn.args = {
-  ...HeaderStories.LoggedIn.args,
+export const Small = Template.bind({});
+Small.args = {
+  label: "Save",
+  size: "small",
+  color: "green",
 };
 
-export const LoggedOut = Template.bind({});
-LoggedOut.args = {
-  ...HeaderStories.LoggedOut.args,
+export const Medium = Template.bind({});
+Medium.args = {
+  label: "Save",
+  color: "green",
+};
+
+export const Large = Template.bind({});
+Large.args = {
+  label: "Save",
+  size: "large",
+  color: "green",
 };

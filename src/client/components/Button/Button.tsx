@@ -17,41 +17,51 @@
  *                                                                                *
  **********************************************************************************/
 
-import React from "react";
-// also exported from '@storybook/react' if you can deal with breaking changes in 6.1
-import { Story, Meta } from "@storybook/react/types-6-0";
+import { FC } from "react";
 
-import { Button, ButtonProps } from "./Button";
+export interface ButtonProps {
+  /**
+   * Button contents
+   */
+  label: string;
+  /**
+   * How big is the button
+   */
+  size?: "small" | "medium" | "large";
+  /**
+   * Background color of the button
+   */
+  color?: "green" | "gray";
+  /**
+   * Optional click handler
+   */
+  onClick?: () => void;
+}
 
-export default {
-  title: "Example/Button",
-  component: Button,
-  argTypes: {
-    backgroundColor: { control: "color" },
-  },
-} as Meta;
-
-const Template: Story<ButtonProps> = args => <Button {...args} />;
-
-export const Primary = Template.bind({});
-Primary.args = {
-  primary: true,
-  label: "Button",
-};
-
-export const Secondary = Template.bind({});
-Secondary.args = {
-  label: "Button",
-};
-
-export const Large = Template.bind({});
-Large.args = {
-  size: "large",
-  label: "Button",
-};
-
-export const Small = Template.bind({});
-Small.args = {
-  size: "small",
-  label: "Button",
+/**
+ * Button component
+ */
+export const Button: FC<ButtonProps> = ({
+  label,
+  size = "medium",
+  color = "green",
+  ...props
+}) => {
+  return (
+    <button
+      type="button"
+      className={[
+        "text-white rounded-lg",
+        size === "small"
+          ? "w-32 h-8 text-sm"
+          : size === "medium"
+          ? "w-36 h-10 text-base"
+          : "w-44 h-12 text-xl",
+        color === "green" ? "bg-green-700" : "bg-gray-500",
+      ].join(" ")}
+      {...props}
+    >
+      {label}
+    </button>
+  );
 };

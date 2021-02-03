@@ -1,2 +1,6 @@
 /dist
 /build
+
+# test coverage
+/src/client/coverage
+/src/server/coverage
