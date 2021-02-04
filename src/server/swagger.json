@@ -1,52 +1,2252 @@
 {
-  "openapi": "3.0.2",
+  "swagger": "2.0",
   "info": {
-    "description": "Synthetic Monitoring by Hyperjump",
-    "version": "0.0.1",
-    "title": "Synthetic Monitoring API Hub",
-    "contact": {
-      "email": "oss@hyperjump.tech"
+    "description": "SYMON Core API Spec",
+    "version": "1.0.0",
+    "title": "SYMON Core",
+    "termsOfService": "http://hyperjump.tech",
+    "license": {
+      "name": "AGPL",
+      "url": "https://www.gnu.org/licenses/"
     }
   },
+  "basePath": "/v1",
   "tags": [
     {
-      "name": "general",
-      "description": "General APIs"
+      "name": "User Authentication"
     },
     {
-      "name": "user",
-      "description": "Users APIs"
+      "name": "User Management"
+    },
+    {
+      "name": "Organization Member Management"
+    },
+    {
+      "name": "Organization Management"
+    },
+    {
+      "name": "Project Management"
+    },
+    {
+      "name": "Probe Management"
+    },
+    {
+      "name": "Location Management"
+    },
+    {
+      "name": "ProbeTasks Management"
+    },
+    {
+      "name": "Agent API"
     }
   ],
+  "schemes": ["http", "https"],
   "paths": {
-    "/": {
-      "get": {
-        "tags": ["general"],
-        "summary": "Hello API",
-        "operationId": "rootId",
-        "description": "Hello, example API.",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/exampleSchema"
+    "/auth": {
+      "post": {
+        "tags": ["User Authentication"],
+        "summary": "To authenticate a user",
+        "description": "TBD",
+        "operationId": "Authenticate",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "credential",
+            "description": "User's credential",
+            "schema": {
+              "required": ["email", "password"],
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "foo@bar.com",
+                  "type": "string"
+                },
+                "password": {
+                  "example": "thisAintNoSecret",
+                  "type": "string"
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, missing mandatory information"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "tags": ["User Authentication"],
+        "summary": "To refresh user token",
+        "description": "TBD",
+        "operationId": "RefreshToken",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "RefreshToken",
+            "description": "Refresh token information",
+            "schema": {
+              "required": ["refreshToken"],
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "example": "hagsfkhasgefkjhasegfkasf",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Refresh successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "example": "hagsfkhasgefkjhasegfkasf",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, missing mandatory information"
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["User Management"],
+        "summary": "To list all users registered in this Symon Core",
+        "description": "To list all users registered in this Symon Core. You must have the role of ADMIN to call this Endpoint",
+        "operationId": "ListUsers",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional default is 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional default is 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of email, Optional default is ASC",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pendaftaran hasil berhasil",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["User Management"],
+        "summary": "To create new user",
+        "description": "To create new user. You must have the role ADMIN to call this API",
+        "operationId": "CreateUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "Offset number to query",
+            "schema": {
+              "$ref": "#/definitions/CreateUser"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/UserRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "409": {
+            "description": "Email already exist"
+          }
+        }
+      }
+    },
+    "/user/{userEntityID}": {
+      "get": {
+        "tags": ["User Management"],
+        "summary": "To get user detail",
+        "description": "To get user detail, you must have role ADMIN or USER (with same userEntityID)",
+        "operationId": "GetUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the user entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/UserRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["User Management"],
+        "summary": "To change user detail",
+        "description": "To change user detail.  you must have role ADMIN or USER (with same userEntityID)",
+        "operationId": "UpdateUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the user entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "User information to update",
+            "schema": {
+              "$ref": "#/definitions/CreateUser"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/UserRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User Management"],
+        "summary": "To delete a user",
+        "description": "To delete a user You must have role ADMIN",
+        "operationId": "DeleteUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the user entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/organization/{orgEntityId}/members": {
+      "get": {
+        "tags": ["Organization Member Management"],
+        "summary": "To list all organizations members",
+        "description": "To list all organizations members, Need role ADMIN or OWNER for the organization",
+        "operationId": "ListOrganizationMembers",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityId",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional, default is 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional, default is 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "description": "Sort order of user name, Optional. Sefault is EMAIL",
+            "type": "string",
+            "enum": ["EMAIL", "ROLE"]
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of organization name, Optional. Default is ASC",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Creation successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/OrganizationMemberRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Organization Member Management"],
+        "summary": "To create new organization",
+        "description": "TBD",
+        "operationId": "AddOrganizationMember",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityId",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "organization",
+            "description": "Organization information to create",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "userEntityId": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "enum": ["MEMBER", "OWNER"],
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Organization or user entity id not found"
+          },
+          "409": {
+            "description": "Organization member already exist"
+          }
+        }
+      }
+    },
+    "/organization/{orgEntityId}/{userEntityID}}": {
+      "put": {
+        "tags": ["Organization Member Management"],
+        "summary": "To list all organizations members",
+        "description": "TBD",
+        "operationId": "UpdateOrganizationMember",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityId",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the user entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "organization",
+            "description": "Organization information to create",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Creation successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/OrganizationMemberRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Organization Member Management"],
+        "summary": "To list all organizations members",
+        "description": "TBD",
+        "operationId": "DeleteOrganizationMembers",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityId",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the user entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion successful"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      }
+    },
+    "/user/{userEntityID}/organizations": {
+      "get": {
+        "tags": ["Organization Management"],
+        "summary": "To list all organizations registered in this Symon Core",
+        "description": "TBD",
+        "operationId": "ListOrganizations",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional. Default 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional. Default 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "order",
+            "description": "Sort order of organization name",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Creation successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/OrganizationMembership"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Organization Management"],
+        "summary": "To create new organization",
+        "description": "TBD",
+        "operationId": "CreateOrganization",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "userEntityID",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "organization",
+            "description": "Organization information to create",
+            "schema": {
+              "$ref": "#/definitions/CreateOrganization"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/OrganizationMembership"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "409": {
+            "description": "Organization name already exist"
+          }
+        }
+      }
+    },
+    "/organization/{orgEntityID}": {
+      "get": {
+        "tags": ["Organization Management"],
+        "summary": "To get organization detail",
+        "description": "TBD",
+        "operationId": "GetOrganization",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityID",
+            "description": "the organization entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/OrganizationRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Organization Management"],
+        "summary": "To change organization detail",
+        "description": "TBD",
+        "operationId": "UpdateOrganization",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityID",
+            "description": "the organization entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "Organization information to update",
+            "schema": {
+              "$ref": "#/definitions/CreateOrganization"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/OrganizationRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Organization Management"],
+        "summary": "To delete an organization",
+        "description": "TBD",
+        "operationId": "DeleteOrganization",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityID",
+            "description": "the organization entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/organization/{orgEntityID}/projects": {
+      "get": {
+        "tags": ["Project Management"],
+        "summary": "To list all project registered in this Symon Core under an organizaiton",
+        "description": "TBD",
+        "operationId": "ListProjects",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityID",
+            "description": "Organization entity id",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional. Default 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional. Default 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of project name, Optional. Default ASC",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProjectRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Project Management"],
+        "summary": "To create new project under an organization",
+        "description": "TBD",
+        "operationId": "CreateProject",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "orgEntityID",
+            "description": "Organization entity id",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "project",
+            "description": "Project information to create",
+            "schema": {
+              "$ref": "#/definitions/CreateProject"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProjectRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "409": {
+            "description": "Organization name already exist"
+          }
+        }
+      }
+    },
+    "/project/{projectEntityID}": {
+      "get": {
+        "tags": ["Project Management"],
+        "summary": "To get organization detail",
+        "description": "TBD",
+        "operationId": "GetProject",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "the project entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProjectRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Project Management"],
+        "summary": "To change project detail",
+        "description": "TBD",
+        "operationId": "UpdateProject",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "the project entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "User information to update",
+            "schema": {
+              "$ref": "#/definitions/CreateProject"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProjectRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Project Management"],
+        "summary": "To delete an project",
+        "description": "TBD",
+        "operationId": "DeleteProject",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "the project entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/project/{projectEntityID}/probes": {
+      "get": {
+        "tags": ["Probe Management"],
+        "summary": "To list all probes registered in this Symon Core under a project",
+        "description": "TBD",
+        "operationId": "ListProbes",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "Organization entity id",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional. Default 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional. Default 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of probe name, Optional. Default ASC",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProbeRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Probe Management"],
+        "summary": "To create new probe under a project",
+        "description": "TBD",
+        "operationId": "CreateProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "Organization entity id",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "project",
+            "description": "Project information to create",
+            "schema": {
+              "$ref": "#/definitions/CreateProbe"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProbeRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "409": {
+            "description": "Probe name already exist"
+          }
+        }
+      }
+    },
+    "/probe/{probeEntityID}": {
+      "get": {
+        "tags": ["Probe Management"],
+        "summary": "To get organization detail",
+        "description": "TBD",
+        "operationId": "GetProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProbeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Probe Management"],
+        "summary": "To change project detail",
+        "description": "TBD",
+        "operationId": "UpdateProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "Probe information to update",
+            "schema": {
+              "$ref": "#/definitions/CreateProbe"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProbeRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Probe Management"],
+        "summary": "To delete a probe",
+        "description": "TBD",
+        "operationId": "DeleteProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probe/{probeEntityID}/start": {
+      "put": {
+        "tags": ["Probe Management"],
+        "summary": "To start a speciffic probe",
+        "description": "To start a speciffic probe. If mode is CRON it start the probe to trigger according to schedule. If mode is MANUAL, probe will be triggered and the status will back to STOP",
+        "operationId": "StartProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "No probe Location defined"
+          }
+        }
+      }
+    },
+    "/probe/{probeEntityID}/stop": {
+      "put": {
+        "tags": ["Probe Management"],
+        "summary": "To start a speciffic probe",
+        "description": "TBD",
+        "operationId": "StopProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probe/{probeEntityID}/schedule": {
+      "put": {
+        "tags": ["Probe Management"],
+        "summary": "To schedule a speciffic probe",
+        "description": "To schedule a speciffic probe, successfuly calling this endpoint will set the mode automaticaly to CRON",
+        "operationId": "ScheduleProbe",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "CRON",
+            "description": "the cron definition",
+            "schema": {
+              "required": ["cron"],
+              "type": "object",
+              "properties": {
+                "cron": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request or bad cron expression"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "tags": ["Location Management"],
+        "summary": "To list all locations registered in this Symon Core",
+        "description": "TBD",
+        "operationId": "ListLocations",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional. Default 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional. Default 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "name",
+            "description": "Location name contains a string",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "countryCode",
+            "description": "Country code contains a string",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "datacenter",
+            "description": "Datacenter name contains a string",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "sort",
+            "description": "Sort order of organization name",
+            "type": "string",
+            "enum": ["NAME", "COUNTRY", "DATACENTER"]
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of organization name",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Creation successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LocationRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Location Management"],
+        "summary": "To create new organization",
+        "description": "TBD",
+        "operationId": "CreateLocation",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "organization",
+            "description": "Organization information to create",
+            "schema": {
+              "$ref": "#/definitions/CreateLocation"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/LocationRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "409": {
+            "description": "Location name already exist"
+          }
+        }
+      }
+    },
+    "/locations/{locationEntityID}": {
+      "get": {
+        "tags": ["Location Management"],
+        "summary": "To get organization detail",
+        "description": "TBD",
+        "operationId": "GetLocation",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "locationEntityID",
+            "description": "the location entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/LocationRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Location Management"],
+        "summary": "To change organization detail",
+        "description": "TBD",
+        "operationId": "UpdateLocation",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "locationEntityID",
+            "description": "the location entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "user",
+            "description": "Organization information to update",
+            "schema": {
+              "$ref": "#/definitions/CreateLocation"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/LocationRecord"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Location Management"],
+        "summary": "To delete a location",
+        "description": "TBD",
+        "operationId": "DeleteLocation",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "locationEntityID",
+            "description": "the location entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
           }
         }
       }
     }
   },
-  "components": {
-    "schemas": {
-      "exampleSchema": {
-        "type": "string",
-        "example": "Hello World!"
+  "definitions": {
+    "BaseResponse": {
+      "required": ["result"],
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string",
+          "enum": ["SUCCESS", "FAIL"]
+        },
+        "message": {
+          "type": "string"
+        }
       }
+    },
+    "BaseEntity": {
+      "required": ["entityID"],
+      "description": "A base construct for any entity",
+      "type": "object",
+      "properties": {
+        "entityID": {
+          "type": "integer"
+        }
+      }
+    },
+    "Location": {
+      "description": "Probe data",
+      "type": "object",
+      "properties": {
+        "locationName": {
+          "example": "Singapore - AWS",
+          "type": "string"
+        },
+        "countryCode": {
+          "example": "SIN",
+          "type": "string"
+        },
+        "dataCenter": {
+          "example": "AWS",
+          "type": "string"
+        }
+      }
+    },
+    "LocationRecord": {
+      "description": "Model that represent an project record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/Location"
+        }
+      ]
+    },
+    "CreateLocation": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Location"
+        }
+      ]
+    },
+    "Probe": {
+      "description": "Probe data",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/CreateProbe"
+        }
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["RUN", "STOP"]
+        },
+        "runMode": {
+          "type": "string",
+          "enum": ["MANUAL", "CRON"]
+        },
+        "cron": {
+          "example": "*/10 * * * *",
+          "type": "string"
+        }
+      }
+    },
+    "ProbeRecord": {
+      "description": "Model that represent an project record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/Probe"
+        }
+      ]
+    },
+    "CreateProbe": {
+      "required": ["probeName"],
+      "description": "Model for create new project",
+      "type": "object",
+      "properties": {
+        "probeName": {
+          "example": "Content Retrieval",
+          "type": "string"
+        }
+      }
+    },
+    "Project": {
+      "description": "Project data",
+      "required": ["projectName"],
+      "type": "object",
+      "properties": {
+        "projectName": {
+          "example": "Hyperjump Web Page",
+          "type": "string"
+        }
+      }
+    },
+    "ProjectRecord": {
+      "description": "Model that represent an project record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/Project"
+        }
+      ]
+    },
+    "CreateProject": {
+      "description": "Model for create new project",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Project"
+        }
+      ]
+    },
+    "Organization": {
+      "description": "Organization data",
+      "required": ["organizationName"],
+      "type": "object",
+      "properties": {
+        "organizationName": {
+          "description": "Unique name of the organization",
+          "example": "hyperjump",
+          "type": "string"
+        },
+        "description": {
+          "type": "boolean"
+        }
+      }
+    },
+    "OrganizationRecord": {
+      "description": "Model that represent an organization record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/Organization"
+        }
+      ]
+    },
+    "CreateOrganization": {
+      "description": "Model for create new organization",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Organization"
+        }
+      ]
+    },
+    "OrganizationMembership": {
+      "type": "object",
+      "required": ["role"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/Organization"
+        }
+      ],
+      "properties": {
+        "role": {
+          "enum": ["MEMBER", "OWNER"],
+          "type": "string"
+        }
+      }
+    },
+    "User": {
+      "description": "User data",
+      "required": ["email", "enabled", "suspended"],
+      "type": "object",
+      "properties": {
+        "email": {
+          "description": "User email address",
+          "example": "foo@bar.com",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "suspended": {
+          "type": "boolean"
+        }
+      }
+    },
+    "UserRecord": {
+      "description": "Model that represent a user record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/User"
+        }
+      ]
+    },
+    "CreateUser": {
+      "description": "Model for create new user",
+      "type": "object",
+      "required": ["password"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/User"
+        }
+      ],
+      "properties": {
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "OrganizationMemberRecord": {
+      "description": "Model that represent a user record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/UserRecord"
+        }
+      ],
+      "properties": {
+        "role": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   }
 }
