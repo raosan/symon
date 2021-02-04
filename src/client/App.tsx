@@ -17,8 +17,13 @@
  *                                                                                *
  **********************************************************************************/
 
-import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { RouterConfig } from "./navigation";
 
-const App = (): JSX.Element => <h1>Hello Symon</h1>;
+const App = (): JSX.Element => (
+  <Router>
+    <RouterConfig />
+  </Router>
+);
 
 export default App;

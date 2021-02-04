@@ -31,8 +31,9 @@ module.exports = {
   devtool: isEnvProduction ? "source-map" : "inline-source-map",
   entry: "./src/client/index.tsx",
   output: {
-    filename: "./static/js/[name].[contenthash:8].js",
-    chunkFilename: "./static/js/[name].[contenthash:8].chunk.js",
+    filename: "static/js/[name].[contenthash:8].js",
+    chunkFilename: "static/js/[name].[contenthash:8].chunk.js",
+    publicPath: "/",
   },
   optimization: {
     minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
@@ -63,8 +64,8 @@ module.exports = {
       template: "./src/client/index.html",
     }),
     new MiniCssExtractPlugin({
-      filename: "./static/css/[name].[contenthash:8].css",
-      chunkFilename: "./static/css/[name].[contenthash:8].chunk.css",
+      filename: "static/css/[name].[contenthash:8].css",
+      chunkFilename: "static/css/[name].[contenthash:8].chunk.css",
     }),
   ],
   devServer: {
