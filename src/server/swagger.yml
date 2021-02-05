@@ -194,7 +194,7 @@ paths:
           description: "Not authorized"
         "409":
           description: "Email already exist"
-  /user/{userEntityID}:
+  /users/{userEntityID}:
     get:
       tags:
         - "User Management"
@@ -301,7 +301,7 @@ paths:
         "404":
           description: "Not found"
           
-  /organization/{orgEntityId}/members:
+  /organizations/{orgEntityId}/members:
     get:
       tags:
         - "Organization Member Management"
@@ -402,7 +402,7 @@ paths:
         "409":
           description: "Organization member already exist"
           
-  /organization/{orgEntityId}/{userEntityID}}:
+  /organizations/{orgEntityId}/{userEntityID}}:
     put:
       tags:
         - "Organization Member Management"
@@ -483,7 +483,7 @@ paths:
           description: "Not authorized"
     
           
-  /user/{userEntityID}/organizations:
+  /users/{userEntityID}/organizations:
     get:
       tags:
         - "Organization Management"
@@ -576,7 +576,7 @@ paths:
           description: "Not authorized"
         "409":
           description: "Organization name already exist"
-  /organization/{orgEntityID}:
+  /organizations/{orgEntityID}:
     get:
       tags:
         - "Organization Management"
@@ -682,7 +682,7 @@ paths:
           description: "Not authorized"
         "404":
           description: "Not found"
-  /organization/{orgEntityID}/projects:
+  /organizations/{orgEntityID}/projects:
     get:
       tags:
         - "Project Management"
@@ -777,7 +777,7 @@ paths:
           description: "Organization name already exist"
           
           
-  /project/{projectEntityID}:
+  /projects/{projectEntityID}:
     get:
       tags:
         - "Project Management"
@@ -886,7 +886,7 @@ paths:
           
           
           
-  /project/{projectEntityID}/probes:
+  /projects/{projectEntityID}/probes:
     get:
       tags:
         - "Probe Management"
@@ -979,7 +979,7 @@ paths:
           description: "Not authorized"
         "409":
           description: "Probe name already exist"
-  /probe/{probeEntityID}:
+  /probes/{probeEntityID}:
     get:
       tags:
         - "Probe Management"
@@ -1087,7 +1087,7 @@ paths:
           description: "Not found"
           
   
-  /probe/{probeEntityID}/start:
+  /probes/{probeEntityID}/start:
     put:
       tags:
         - "Probe Management"
@@ -1119,7 +1119,7 @@ paths:
           description: "Not authorized"
         "404":
           description: "Not found"
-  /probe/{probeEntityID}/stop:
+  /probes/{probeEntityID}/stop:
     put:
       tags:
         - "Probe Management"
@@ -1149,7 +1149,7 @@ paths:
           description: "Not authorized"
         "404":
           description: "Not found"
-  /probe/{probeEntityID}/schedule:
+  /probes/{probeEntityID}/schedule:
     put:
       tags:
         - "Probe Management"

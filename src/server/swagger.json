@@ -284,7 +284,7 @@
         }
       }
     },
-    "/user/{userEntityID}": {
+    "/users/{userEntityID}": {
       "get": {
         "tags": ["User Management"],
         "summary": "To get user detail",
@@ -435,7 +435,7 @@
         }
       }
     },
-    "/organization/{orgEntityId}/members": {
+    "/organizations/{orgEntityId}/members": {
       "get": {
         "tags": ["Organization Member Management"],
         "summary": "To list all organizations members",
@@ -576,7 +576,7 @@
         }
       }
     },
-    "/organization/{orgEntityId}/{userEntityID}}": {
+    "/organizations/{orgEntityId}/{userEntityID}}": {
       "put": {
         "tags": ["Organization Member Management"],
         "summary": "To list all organizations members",
@@ -688,7 +688,7 @@
         }
       }
     },
-    "/user/{userEntityID}/organizations": {
+    "/users/{userEntityID}/organizations": {
       "get": {
         "tags": ["Organization Management"],
         "summary": "To list all organizations registered in this Symon Core",
@@ -822,7 +822,7 @@
         }
       }
     },
-    "/organization/{orgEntityID}": {
+    "/organizations/{orgEntityID}": {
       "get": {
         "tags": ["Organization Management"],
         "summary": "To get organization detail",
@@ -973,7 +973,7 @@
         }
       }
     },
-    "/organization/{orgEntityID}/projects": {
+    "/organizations/{orgEntityID}/projects": {
       "get": {
         "tags": ["Project Management"],
         "summary": "To list all project registered in this Symon Core under an organizaiton",
@@ -1107,7 +1107,7 @@
         }
       }
     },
-    "/project/{projectEntityID}": {
+    "/projects/{projectEntityID}": {
       "get": {
         "tags": ["Project Management"],
         "summary": "To get organization detail",
@@ -1258,7 +1258,7 @@
         }
       }
     },
-    "/project/{projectEntityID}/probes": {
+    "/projects/{projectEntityID}/probes": {
       "get": {
         "tags": ["Probe Management"],
         "summary": "To list all probes registered in this Symon Core under a project",
@@ -1392,7 +1392,7 @@
         }
       }
     },
-    "/probe/{probeEntityID}": {
+    "/probes/{probeEntityID}": {
       "get": {
         "tags": ["Probe Management"],
         "summary": "To get organization detail",
@@ -1543,7 +1543,7 @@
         }
       }
     },
-    "/probe/{probeEntityID}/start": {
+    "/probes/{probeEntityID}/start": {
       "put": {
         "tags": ["Probe Management"],
         "summary": "To start a speciffic probe",
@@ -1587,7 +1587,7 @@
         }
       }
     },
-    "/probe/{probeEntityID}/stop": {
+    "/probes/{probeEntityID}/stop": {
       "put": {
         "tags": ["Probe Management"],
         "summary": "To start a speciffic probe",
@@ -1628,7 +1628,7 @@
         }
       }
     },
-    "/probe/{probeEntityID}/schedule": {
+    "/probes/{probeEntityID}/schedule": {
       "put": {
         "tags": ["Probe Management"],
         "summary": "To schedule a speciffic probe",
