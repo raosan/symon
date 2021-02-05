@@ -17,18 +17,12 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+export interface Organization {
+  id: number;
+  name: string;
+  description: string;
+}
 
-import organizations from "./services/organizations";
-import users from "./services/users";
+export type OrganizationCreate = Omit<Organization, "id">;
 
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(users);
-router.use(organizations);
-
-export default router;
+export type OrganizationUpdate = Omit<Organization, "id">;

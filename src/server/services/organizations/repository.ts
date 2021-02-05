@@ -17,18 +17,52 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { PrismaClient } from "@prisma/client";
+import { Organization, OrganizationCreate, OrganizationUpdate } from "./entity";
 
-import organizations from "./services/organizations";
-import users from "./services/users";
+const prisma = new PrismaClient();
 
-const router = express.Router();
+export class OrganizationRepository {
+  async findMany(): Promise<Organization[]> {
+    const data = await prisma.organization.findMany();
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
+    return data;
+  }
 
-router.use(users);
-router.use(organizations);
+  async findOneByID({ id }: { id: number }): Promise<Organization | null> {
+    const data = await prisma.organization.findUnique({
+      where: {
+        id,
+      },
+    });
 
-export default router;
+    return data;
+  }
+
+  async create(res: OrganizationCreate): Promise<Organization> {
+    const data = await prisma.organization.create({
+      data: res,
+    });
+
+    return data;
+  }
+
+  async update(
+    res: OrganizationUpdate & { id: number },
+  ): Promise<Organization> {
+    const { id, ...newData } = res;
+
+    const data = await prisma.organization.update({
+      where: { id },
+      data: newData,
+    });
+
+    return data;
+  }
+
+  async destroy({ id }: { id: number }): Promise<number> {
+    await prisma.organization.delete({ where: { id } });
+
+    return id;
+  }
+}

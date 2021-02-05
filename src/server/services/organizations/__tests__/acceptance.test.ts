@@ -1,0 +1,258 @@
+/**********************************************************************************
+ *                                                                                *
+ *    Copyright (C) 2021  SYMON Contributors                                      *
+ *                                                                                *
+ *   This program is free software: you can redistribute it and/or modify         *
+ *   it under the terms of the GNU Affero General Public License as published     *
+ *   by the Free Software Foundation, either version 3 of the License, or         *
+ *   (at your option) any later version.                                          *
+ *                                                                                *
+ *   This program is distributed in the hope that it will be useful,              *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ *   GNU Affero General Public License for more details.                          *
+ *                                                                                *
+ *   You should have received a copy of the GNU Affero General Public License     *
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.       *
+ *                                                                                *
+ **********************************************************************************/
+
+import bodyParser from "body-parser";
+import express from "express";
+import faker from "faker";
+import request from "supertest";
+
+import errorHandler from "../../../internal/middleware/error-handler";
+import {
+  Organization,
+  OrganizationCreate,
+  OrganizationUpdate,
+} from "../entity";
+import organization from "../index";
+import { OrganizationRepository } from "../repository";
+
+jest.mock("../repository");
+
+let organizations: Organization[] = [
+  {
+    id: 1,
+    name: faker.company.companyName(),
+    description: faker.lorem.words(),
+  },
+];
+
+OrganizationRepository.prototype.findMany = async () => {
+  return organizations;
+};
+
+OrganizationRepository.prototype.findOneByID = async ({
+  id,
+}: {
+  id: number;
+}) => {
+  return organizations.find(organization => organization.id === id) || null;
+};
+
+OrganizationRepository.prototype.create = async (
+  userInput: OrganizationCreate,
+) => {
+  const createdUser = { id: 2, ...userInput };
+  organizations.push(createdUser);
+
+  return createdUser;
+};
+
+OrganizationRepository.prototype.update = async (
+  userUpdate: OrganizationUpdate & { id: number },
+) => {
+  const { id, ...newData } = userUpdate;
+
+  organizations = organizations.map(organization => {
+    if (organization.id === id) {
+      return { ...organization, newData };
+    }
+
+    return organization;
+  });
+
+  const updatedData = organizations.find(
+    organization => organization.id === id,
+  );
+
+  if (!updatedData) {
+    throw new Error("Organization not found");
+  }
+
+  return updatedData;
+};
+
+OrganizationRepository.prototype.destroy = async ({ id }: { id: number }) => {
+  organizations = organizations.filter(organization => organization.id !== id);
+
+  return id;
+};
+
+describe("Organization Service", () => {
+  const app = express();
+
+  app.use(bodyParser.json());
+  app.use(organization);
+  app.use(errorHandler());
+
+  describe("GET /v1/organizations", () => {
+    it("should return http status code 200", async done => {
+      const res = await request(app).get("/v1/organizations");
+
+      expect(res.status).toBe(200);
+      expect(res.body.length).toBe(1);
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      OrganizationRepository.prototype.findMany = async (): Promise<
+        Organization[]
+      > => {
+        throw new Error("query error");
+      };
+
+      const res = await request(app).get("/v1/organizations");
+
+      expect(res.status).toBe(422);
+      done();
+    });
+  });
+
+  describe("GET /v1/organizations/:id", () => {
+    it("should return http status code 200", async done => {
+      const res = await request(app).get("/v1/organizations/1");
+
+      expect(res.status).toBe(200);
+      expect(res.body.id).toBe(1);
+      done();
+    });
+
+    it("should return http status code 404", async done => {
+      const res = await request(app).get("/v1/organizations/2");
+
+      expect(res.status).toBe(404);
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      OrganizationRepository.prototype.findOneByID = async ({
+        id,
+      }: {
+        id: number;
+      }) => {
+        throw new Error(`query error id: ${id}`);
+      };
+
+      const res = await request(app).get("/v1/organizations/3");
+
+      expect(res.status).toBe(422);
+      done();
+    });
+  });
+
+  describe("POST /v1/organizations", () => {
+    it("should return http status code 201", async done => {
+      const res = await request(app).post("/v1/organizations").send({
+        name: faker.company.companyName(),
+        description: faker.lorem.words(),
+      });
+
+      expect(res.status).toBe(201);
+      expect(organizations.length).toBe(2);
+      done();
+    });
+
+    it("should return http status code 400", async done => {
+      const res = await request(app).post("/v1/organizations").send({});
+
+      expect(res.status).toBe(400);
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      OrganizationRepository.prototype.create = async (
+        data: OrganizationCreate,
+      ) => {
+        throw new Error(`query error with name: ${data.name}`);
+      };
+
+      const res = await request(app).post("/v1/organizations").send({
+        name: faker.company.companyName(),
+        description: faker.lorem.words(),
+      });
+
+      expect(res.status).toBe(422);
+      done();
+    });
+  });
+
+  describe("PUT /v1/organizations/:id", () => {
+    it("should return http status code 200", async done => {
+      const res = await request(app).put("/v1/organizations/2").send({
+        name: faker.company.companyName(),
+        description: faker.lorem.words(),
+      });
+
+      expect(res.status).toBe(200);
+      expect(organizations.length).toBe(2);
+      done();
+    });
+
+    it("should return http status code 400", async done => {
+      const res = await request(app).put("/v1/organizations/2").send({
+        id: 2,
+        name: faker.company.companyName(),
+        description: faker.lorem.words(),
+      });
+
+      expect(res.status).toBe(400);
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      OrganizationRepository.prototype.update = async (
+        data: OrganizationUpdate & { id: number },
+      ) => {
+        throw new Error(`query error id: ${data.id}`);
+      };
+
+      const res = await request(app).put("/v1/organizations/2").send({
+        name: faker.company.companyName(),
+        description: faker.lorem.words(),
+      });
+
+      expect(res.status).toBe(422);
+      done();
+    });
+  });
+
+  describe("DELETE /v1/organizations/:id", () => {
+    it("should return http status code 200", async done => {
+      const res = await request(app).delete("/v1/organizations/2");
+
+      expect(res.status).toBe(200);
+      expect(organizations.length).toBe(1);
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      // arrange
+      OrganizationRepository.prototype.destroy = async ({
+        id,
+      }: {
+        id: number;
+      }) => {
+        throw new Error(`query error id: ${id}`);
+      };
+
+      const res = await request(app).delete("/v1/organizations/3");
+
+      expect(res.status).toBe(422);
+      done();
+    });
+  });
+});

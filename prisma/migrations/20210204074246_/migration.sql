@@ -11,5 +11,12 @@ CREATE TABLE "user" (
     "updated_by" TEXT NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "organization" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user.email_unique" ON "user"("email");

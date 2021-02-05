@@ -17,18 +17,13 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import Joi from "joi";
 
-import organizations from "./services/organizations";
-import users from "./services/users";
-
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
+const schemaValidator = Joi.object().keys({
+  name: Joi.string().required().label("Name"),
+  description: Joi.string().label("Description"),
 });
 
-router.use(users);
-router.use(organizations);
+export const createSchemaValidator = schemaValidator;
 
-export default router;
+export const updateSchemaValidator = schemaValidator;

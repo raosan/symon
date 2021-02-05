@@ -18,3 +18,9 @@ model user {
   created_by    String
   updated_by    String
 }
+
+model organization {
+  id            Int   @id @default(autoincrement())
+  name          String
+  description   String
+}
