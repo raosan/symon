@@ -14,10 +14,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM node:lts
+FROM node:lts as build
 
 WORKDIR /usr/app/symon
 
+# Stage 1: Build
 # Copy files needed
 COPY package-lock.json .
 COPY package.json .
@@ -30,9 +31,13 @@ COPY webpack.config.js .
 RUN mkdir src
 COPY src/client src/client
 
+# Build the frontend
 RUN npm ci
+RUN npm run client:build
 
-# Open port 4000
-EXPOSE 4000
+# Stage 2: Deploy
+FROM nginx:stable
+COPY --from=build /usr/app/symon/dist /usr/share/nginx/html
+EXPOSE 80
 
-CMD ["npm", "run", "client"]
+CMD ["nginx", "-g", "daemon off;"]
