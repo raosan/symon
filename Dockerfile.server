@@ -19,6 +19,7 @@ FROM node:lts
 WORKDIR /usr/app/symon
 
 # Copy files needed
+
 COPY package-lock.json .
 COPY package.json .
 COPY tsconfig.json .
@@ -31,6 +32,9 @@ COPY src/utils src/utils
 
 # Clean install dependencies
 RUN npm ci
+
+# Generate prisma
+RUN npx prisma generate --schema src/server/prisma/schema.prisma
 
 # Open port 8080
 EXPOSE 8080
