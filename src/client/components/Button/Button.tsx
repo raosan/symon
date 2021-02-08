@@ -17,9 +17,9 @@
  *                                                                                *
  **********************************************************************************/
 
-import { FC } from "react";
+import { ButtonHTMLAttributes, FC } from "react";
 
-export interface ButtonProps {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Button contents
    */
@@ -29,13 +29,9 @@ export interface ButtonProps {
    */
   size?: "small" | "medium" | "large";
   /**
-   * Background color of the button
+   * Color variant of the button
    */
-  color?: "green" | "gray";
-  /**
-   * Optional click handler
-   */
-  onClick?: () => void;
+  variant?: "light" | "dark";
 }
 
 /**
@@ -44,21 +40,23 @@ export interface ButtonProps {
 export const Button: FC<ButtonProps> = ({
   label,
   size = "medium",
-  color = "green",
+  variant = "dark",
   ...props
 }) => {
   return (
     <button
       type="button"
-      className={[
-        "text-white rounded-lg",
+      className={`rounded-lg ${
         size === "small"
           ? "w-32 h-8 text-sm"
           : size === "medium"
           ? "w-36 h-10 text-base"
-          : "w-44 h-12 text-xl",
-        color === "green" ? "bg-green-700" : "bg-gray-500",
-      ].join(" ")}
+          : "w-44 h-12 text-xl"
+      } ${
+        variant === "light"
+          ? "bg-white border border-black"
+          : "bg-bw text-white "
+      }`}
       {...props}
     >
       {label}

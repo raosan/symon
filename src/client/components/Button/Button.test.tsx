@@ -46,15 +46,15 @@ describe("renders button with correct size", () => {
 });
 
 describe("renders button with correct color", () => {
-  it("renders a gray button", () => {
-    const { container } = render(<Button label="Button" color="gray" />);
+  it("renders a dark button", () => {
+    const { container } = render(<Button label="Button" variant="dark" />);
     const button = container.querySelector("button");
-    expect(button).toHaveClass("bg-gray-500");
+    expect(button).toHaveClass("bg-bw");
   });
 
-  it("renders a medium button", () => {
-    const { container } = render(<Button label="Button" color="green" />);
+  it("renders a light button", () => {
+    const { container } = render(<Button label="Button" variant="light" />);
     const button = container.querySelector("button");
-    expect(button).toHaveClass("bg-green-700");
+    expect(button).toHaveClass("bg-white", "border", "border-black");
   });
 });

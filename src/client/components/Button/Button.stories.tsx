@@ -30,20 +30,29 @@ const Template: Story<ButtonProps> = args => <Button {...args} />;
 
 export const Small = Template.bind({});
 Small.args = {
-  label: "Save",
+  label: "Small",
   size: "small",
-  color: "green",
 };
 
 export const Medium = Template.bind({});
 Medium.args = {
-  label: "Save",
-  color: "green",
+  label: "Medium",
 };
 
 export const Large = Template.bind({});
 Large.args = {
-  label: "Save",
+  label: "Large",
   size: "large",
-  color: "green",
+};
+
+export const Light = Template.bind({});
+Light.args = {
+  label: "Light",
+  variant: "light",
+};
+
+export const Dark = Template.bind({});
+Dark.args = {
+  label: "Dark",
+  variant: "dark",
 };

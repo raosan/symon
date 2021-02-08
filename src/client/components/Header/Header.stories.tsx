@@ -38,5 +38,5 @@ WithRightText.args = {
 
 export const WithRightButton = Template.bind({});
 WithRightButton.args = {
-  right: <Button label="Login" />,
+  right: <Button label="Login" variant="light" />,
 };

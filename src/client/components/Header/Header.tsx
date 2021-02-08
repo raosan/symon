@@ -26,7 +26,7 @@ export interface HeaderProps {
 
 export const Header: FC<HeaderProps> = ({ right }) => {
   return (
-    <div className="h-20 px-7 bg-primary flex justify-between items-center">
+    <div className="h-20 px-7 bg-bw-dark flex justify-between items-center">
       <Logo />
       <div>{right}</div>
     </div>
