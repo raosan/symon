@@ -21,6 +21,7 @@ export enum commonHTTPErrors {
   badRequest = 400,
   notFound = 404,
   unprocessableEntity = 422,
+  notAuthenticated = 401,
 }
 
 export class AppError extends Error {

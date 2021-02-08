@@ -17,61 +17,11 @@
  *                                                                                *
  **********************************************************************************/
 
-import { PrismaClient } from "@prisma/client";
-import { User, UserInput, UserUpdate } from "./entity";
+import express from "express";
+import { login } from "./handler";
 
-const prisma = new PrismaClient();
+const router = express.Router();
 
-export class Repository {
-  async users(): Promise<User[]> {
-    const data = await prisma.user.findMany();
+router.post("/v1/auth", login);
 
-    return data;
-  }
-
-  async userByID(id: number): Promise<User | null> {
-    const data = await prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    return data;
-  }
-
-  async userByEmail(email: string): Promise<User | null> {
-    const data = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    return data;
-  }
-
-  async create(userInput: UserInput): Promise<User> {
-    const data = await prisma.user.create({
-      data: userInput,
-    });
-
-    return data;
-  }
-
-  async update(userUpdate: UserUpdate): Promise<User> {
-    const { id, ...newData } = userUpdate;
-    const data = await prisma.user.update({
-      where: { id },
-      data: newData,
-    });
-
-    return data;
-  }
-
-  async delete(id: number): Promise<number> {
-    await prisma.user.delete({
-      where: { id },
-    });
-
-    return id;
-  }
-}
+export default router;

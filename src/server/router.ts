@@ -21,12 +21,15 @@ import express from "express";
 
 import organizations from "./services/organizations";
 import users from "./services/users";
+import auth from "./services/auth";
 
 const router = express.Router();
 
 router.get("/", (_, res) => {
   res.send("Hello World!");
 });
+
+router.use(auth);
 
 router.use(users);
 router.use(organizations);
