@@ -24,9 +24,17 @@ dotenv.config();
 interface Config {
   env: string;
   port: string;
+  jwtSecret: string;
+  jwtIssuer: string;
+  jwtAccessExpired: string;
+  jwtRefreshExpired: string;
 }
 
 export const cfg: Config = {
   env: process.env.NODE_ENV || "production",
   port: process.env.PORT || "8080",
+  jwtSecret: process.env.JWT_SECRET || "jwtSecret",
+  jwtIssuer: process.env.JWT_ISSUER || "symon.org",
+  jwtAccessExpired: process.env.JWT_ACCESS_EXPIRED || "5m",
+  jwtRefreshExpired: process.env.JWT_REFRESH_EXPIRED || "1y",
 };

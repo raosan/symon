@@ -26,6 +26,7 @@ import { User } from "../../users/entity";
 import { Repository } from "../../users/repository";
 import errorHandler from "../../../internal/middleware/error-handler";
 import { setupPassport } from "../../../config/passport";
+import jwt from "jsonwebtoken";
 
 jest.mock("../../users/repository");
 
@@ -42,6 +43,30 @@ const users: User[] = [
     created_by: faker.internet.exampleEmail(),
     updated_by: faker.internet.exampleEmail(),
   },
+  {
+    id: 2,
+    email: "disabled@bar.com",
+    password_hash:
+      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+    enabled: 0,
+    suspended: 0,
+    created_at: 1640908800,
+    updated_at: 1640908800,
+    created_by: faker.internet.exampleEmail(),
+    updated_by: faker.internet.exampleEmail(),
+  },
+  {
+    id: 3,
+    email: "suspended@test.com",
+    password_hash:
+      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+    enabled: 1,
+    suspended: 1,
+    created_at: 1640908800,
+    updated_at: 1640908800,
+    created_by: faker.internet.exampleEmail(),
+    updated_by: faker.internet.exampleEmail(),
+  },
 ];
 
 Repository.prototype.userByEmail = async (email: string) => {
@@ -49,6 +74,30 @@ Repository.prototype.userByEmail = async (email: string) => {
 };
 
 setupPassport(Repository.prototype);
+
+function generateMockJWT(
+  type: "ACCESS" | "REFRESH",
+  email: string,
+  uuid: string,
+  createdAt: number, // added parameter to mock time
+) {
+  const JWT_SECRET = process.env.JWT_SECRET || "jwtSecret";
+  const JWT_ISSUER = process.env.JWT_ISSUER || "symon.org";
+
+  return jwt.sign(
+    {
+      iss: JWT_ISSUER,
+      sub: email,
+      aud: ["OWNER@orgname"], // todo: change this line when role feature is done
+      nbf: createdAt,
+      iat: createdAt,
+      typ: type,
+      jit: uuid,
+    },
+    JWT_SECRET,
+    { expiresIn: type === "ACCESS" ? "5m" : "1y" },
+  );
+}
 
 describe("Auth Service", () => {
   // arrange
@@ -99,6 +148,167 @@ describe("Auth Service", () => {
       const res = await request(app).post("/v1/auth").send({
         email: "foo@foo.com",
         password: "wrong password",
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+  });
+
+  describe("POST /v1/refresh", () => {
+    it("should return http status code 200", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "REFRESH",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
+      });
+
+      // assert
+      expect(res.status).toBe(200);
+      done();
+    });
+
+    it("should return http status code 400 empty string", async done => {
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: "",
+      });
+
+      // assert
+      expect(res.status).toBe(400);
+      done();
+    });
+
+    it("should return http status code 401 empty object", async done => {
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: {},
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 empty array", async done => {
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: [],
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 Expired", async done => {
+      //arrange
+      const now = new Date(2018);
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "REFRESH",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 Email not found", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "REFRESH",
+        "foo@foo.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 User disabled", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "REFRESH",
+        "disabled@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 User suspended", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "REFRESH",
+        "suspended@test.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
+      });
+
+      // assert
+      expect(res.status).toBe(401);
+      done();
+    });
+
+    it("should return http status code 401 typ is not REFRESH", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockRefreshToken = generateMockJWT(
+        "ACCESS",
+        "bar@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      // act
+      const res = await request(app).post("/v1/refresh").send({
+        refreshToken: mockRefreshToken,
       });
 
       // assert

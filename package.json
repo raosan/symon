@@ -22,6 +22,7 @@
     "dynamic-analysis": "npm run test:client && npm run test:server",
     "test:client": "jest --config src/client/jest.config.js --coverage",
     "test:server": "jest --config src/server/jest.config.js --coverage",
+    "test:server:watch": "jest --config src/server/jest.config.js --watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "cypress:open": "npx cypress open"

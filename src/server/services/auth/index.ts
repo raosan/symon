@@ -18,10 +18,11 @@
  **********************************************************************************/
 
 import express from "express";
-import { login } from "./handler";
+import { login, refresh } from "./handler";
 
 const router = express.Router();
 
 router.post("/v1/auth", login);
+router.post("/v1/refresh", refresh);
 
 export default router;
