@@ -22,6 +22,13 @@ Copy the environment variables configuration:
 cp .env.example .env
 ```
 
+Run database (Prisma) seeding:
+
+```bash
+npx prisma generate
+npx prisma migrate dev --preview-feature
+```
+
 Run the application:
 ```
 npm start
