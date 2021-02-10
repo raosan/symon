@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import passport from "passport";
 import * as passportLocal from "passport-local";
-import { Repository } from "../services/users/repository";
+import { UserRepository } from "../services/users/repository";
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -12,7 +12,7 @@ export function validatePassword(
   return bcrypt.compareSync(password, password_hash);
 }
 
-export function setupPassport(repo: Repository): void {
+export function setupPassport(repo: UserRepository): void {
   passport.use(
     new LocalStrategy(
       {
@@ -21,7 +21,7 @@ export function setupPassport(repo: Repository): void {
       },
       (email, password, done) => {
         repo
-          .userByEmail(email)
+          .findOneByEmail(email)
           .then(async user => {
             if (!user) {
               return done(null, false, { message: "Email not found." });

@@ -19,12 +19,12 @@
 
 import Joi from "joi";
 
-export const storeSchema = Joi.object().keys({
+export const createSchemaValidator = Joi.object().keys({
   email: Joi.string().required().label("Email"),
   password: Joi.string().required().label("Password"),
 });
 
-export const updateSchema = Joi.object().keys({
+export const updateSchemaValidator = Joi.object().keys({
   enabled: Joi.number().allow(0, 1).required().label("Enabled"),
   suspended: Joi.number().allow(0, 1).required().label("Suspended"),
 });

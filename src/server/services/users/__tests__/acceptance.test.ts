@@ -17,14 +17,15 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
 import bodyParser from "body-parser";
-import request from "supertest";
+import express from "express";
 import faker from "faker";
-import user from "../index";
-import { User, UserInput, UserUpdate } from "../entity";
-import { Repository } from "../repository";
+import request from "supertest";
+
 import errorHandler from "../../../internal/middleware/error-handler";
+import { User, UserCreate, UserUpdate } from "../entity";
+import user from "../index";
+import { UserRepository } from "../repository";
 
 jest.mock("../repository");
 
@@ -35,48 +36,53 @@ let users: User[] = [
     password_hash: faker.internet.password(),
     enabled: 1,
     suspended: 0,
-    created_at: 1640908800,
-    updated_at: 1640908800,
-    created_by: faker.internet.exampleEmail(),
-    updated_by: faker.internet.exampleEmail(),
   },
 ];
-Repository.prototype.users = async () => {
+
+UserRepository.prototype.findMany = async () => {
   return users;
 };
-Repository.prototype.userByID = async (id: number) => {
+
+UserRepository.prototype.findOneByID = async (id: number) => {
   return users.find(user => user.id === id) || null;
 };
-Repository.prototype.create = async (userInput: UserInput) => {
-  const createdUser = { id: 2, ...userInput };
-  users.push(createdUser);
+
+UserRepository.prototype.findOneByEmail = async (email: string) => {
+  return users.find(user => user.email === email) || null;
+};
+
+UserRepository.prototype.create = async (data: UserCreate) => {
+  const createdUser = { id: 2, ...data };
+  users.push({ ...createdUser, password_hash: createdUser.password });
 
   return createdUser;
 };
-Repository.prototype.update = async (userUpdate: UserUpdate) => {
-  const { id, ...newData } = userUpdate;
+
+UserRepository.prototype.update = async (id: number, data: UserUpdate) => {
   users = users.map(user => {
     if (user.id === id) {
-      return { ...user, newData };
+      return { ...user, newData: data };
     }
 
     return user;
   });
+
   const updatedData = users.find(user => user.id === id);
+
   if (!updatedData) {
     throw new Error("User not found");
   }
 
   return updatedData;
 };
-Repository.prototype.delete = async (id: number) => {
+
+UserRepository.prototype.destroy = async (id: number) => {
   users = users.filter(user => user.id !== id);
 
   return id;
 };
 
 describe("User Service", () => {
-  // arrange
   const app = express();
   app.use(bodyParser.json());
   app.use(user);
@@ -84,25 +90,25 @@ describe("User Service", () => {
 
   describe("GET /v1/users", () => {
     it("should return http status code 200", async done => {
-      // act
       const res = await request(app).get("/v1/users");
 
-      // assert
-      expect(res.status).toBe(200);
-      expect(res.body.length).toBe(1);
+      expect(res.status).toStrictEqual(200);
+      expect(res.body).toStrictEqual({
+        result: "SUCCESS",
+        message: "Successfully get list of users",
+        data: users,
+      });
+
       done();
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      Repository.prototype.users = async (): Promise<User[]> => {
+      UserRepository.prototype.findMany = async (): Promise<User[]> => {
         throw new Error("query error");
       };
 
-      // act
       const res = await request(app).get("/v1/users");
 
-      // assert
       expect(res.status).toBe(422);
       done();
     });
@@ -110,148 +116,141 @@ describe("User Service", () => {
 
   describe("GET /v1/users/:id", () => {
     it("should return http status code 200", async done => {
-      // act
       const res = await request(app).get("/v1/users/1");
 
-      // assert
-      expect(res.status).toBe(200);
-      expect(res.body.id).toBe(1);
+      expect(res.status).toStrictEqual(200);
+      expect(res.body).toStrictEqual({
+        result: "SUCCESS",
+        message: "Successfully get user",
+        data: users[0],
+      });
+
       done();
     });
 
     it("should return http status code 404", async done => {
-      // act
       const res = await request(app).get("/v1/users/2");
 
-      // assert
       expect(res.status).toBe(404);
       done();
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      Repository.prototype.userByID = async (id: number) => {
+      UserRepository.prototype.findOneByID = async (id: number) => {
         throw new Error(`query error id: ${id}`);
       };
 
-      // act
       const res = await request(app).get("/v1/users/3");
 
-      // assert
       expect(res.status).toBe(422);
       done();
     });
   });
 
   describe("POST /v1/users", () => {
+    const mockData = {
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    };
+
     it("should return http status code 201", async done => {
-      // act
-      const res = await request(app).post("/v1/users").send({
-        email: faker.internet.email(),
-        password: faker.internet.password(),
+      const res = await request(app).post("/v1/users").send(mockData);
+
+      expect(res.status).toStrictEqual(201);
+      expect(res.body).toStrictEqual({
+        result: "SUCCESS",
+        message: "Successfully create user",
+        data: {
+          ...mockData,
+          id: 2,
+          enabled: 1,
+          suspended: 0,
+        },
       });
 
-      // assert
-      expect(res.status).toBe(201);
-      expect(users.length).toBe(2);
       done();
     });
 
     it("should return http status code 400", async done => {
-      // act
       const res = await request(app).post("/v1/users").send({
         password: faker.internet.password(),
       });
 
-      // assert
       expect(res.status).toBe(400);
       done();
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      Repository.prototype.create = async (data: UserInput) => {
+      UserRepository.prototype.create = async (data: UserCreate) => {
         throw new Error(`query error with email: ${data.email}`);
       };
 
-      // act
-      const res = await request(app).post("/v1/users").send({
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      });
+      const res = await request(app).post("/v1/users").send(mockData);
 
-      // assert
       expect(res.status).toBe(422);
+
       done();
     });
   });
 
   describe("PUT /v1/users/:id", () => {
     it("should return http status code 200", async done => {
-      // act
       const res = await request(app).put("/v1/users/2").send({
-        enabled: 0,
-        suspended: 1,
+        enabled: 1,
+        suspended: 0,
       });
 
-      // assert
       expect(res.status).toBe(200);
       expect(users.length).toBe(2);
       done();
     });
 
     it("should return http status code 400", async done => {
-      // act
       const res = await request(app).put("/v1/users/2").send({
         id: 2,
-        enabled: 0,
-        suspended: 1,
+        enabled: 1,
+        suspended: 0,
       });
 
-      // assert
       expect(res.status).toBe(400);
       done();
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      Repository.prototype.update = async (data: UserUpdate) => {
-        throw new Error(`query error id: ${data.id}`);
+      UserRepository.prototype.update = async id => {
+        throw new Error(`query error id: ${id}`);
       };
 
-      // act
       const res = await request(app).put("/v1/users/2").send({
-        enabled: 0,
-        suspended: 1,
+        enabled: 1,
+        suspended: 0,
       });
 
-      // assert
       expect(res.status).toBe(422);
       done();
     });
   });
 
   describe("DELETE /v1/users/:id", () => {
-    it("should return http status code 202", async done => {
-      // act
+    it("should return http status code 200", async done => {
       const res = await request(app).delete("/v1/users/2");
 
-      // assert
-      expect(res.status).toBe(202);
-      expect(users.length).toBe(1);
+      expect(res.status).toStrictEqual(200);
+      expect(res.body).toStrictEqual({
+        result: "SUCCESS",
+        message: "Successfully delete user",
+      });
+
       done();
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      Repository.prototype.delete = async (id: number) => {
+      UserRepository.prototype.destroy = async (id: number) => {
         throw new Error(`query error id: ${id}`);
       };
 
-      // act
       const res = await request(app).delete("/v1/users/3");
 
-      // assert
       expect(res.status).toBe(422);
       done();
     });

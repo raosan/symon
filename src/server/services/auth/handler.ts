@@ -17,21 +17,23 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Request, Response, NextFunction } from "express";
-import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 import passport from "passport";
-import { setupPassport } from "../../config/passport";
-import { Repository } from "../users/repository";
+import { v4 as uuidv4 } from "uuid";
+
 import { cfg } from "../../../config/index";
+import { setupPassport } from "../../config/passport";
+import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { UserRepository } from "../users/repository";
 
 const JWT_SECRET = cfg.jwtSecret;
 const JWT_ISSUER = cfg.jwtIssuer;
 const JWT_ACCESS_EXPIRED = cfg.jwtAccessExpired;
 const JWT_REFRESH_EXPIRED = cfg.jwtRefreshExpired;
 
-const repo = new Repository();
+const repo = new UserRepository();
+
 setupPassport(repo);
 
 export async function login(
@@ -109,8 +111,8 @@ export async function refresh(
     const isTokenValid =
       !isTokenExpired && decoded.iss === JWT_ISSUER && decoded.exp > 0;
 
-    const repo = new Repository();
-    const user = await repo.userByEmail(decoded.sub);
+    const repo = new UserRepository();
+    const user = await repo.findOneByEmail(decoded.sub);
     const isUserExistAndActive = user && user.enabled && !user.suspended;
 
     if (!isTokenTypeRefresh || !isTokenValid || !isUserExistAndActive) {

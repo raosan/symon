@@ -23,26 +23,10 @@ export interface User {
   password_hash: string;
   enabled: number;
   suspended: number;
-  created_at: number;
-  updated_at: number;
-  created_by: string;
-  updated_by: string;
 }
 
-export interface UserInput {
-  email: string;
-  password_hash: string;
-  enabled: number;
-  suspended: number;
-  created_at: number;
-  updated_at: number;
-  created_by: string;
-  updated_by: string;
-}
+export type UserCreate = Omit<User, "id" | "password_hash"> & {
+  password: string;
+};
 
-export interface UserUpdate {
-  id: number;
-  enabled: number;
-  suspended: number;
-  updated_at: number;
-}
+export type UserUpdate = Pick<User, "enabled" | "suspended">;

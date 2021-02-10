@@ -17,16 +17,16 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
 import bodyParser from "body-parser";
-import request from "supertest";
-import faker from "faker";
-import auth from "../index";
-import { User } from "../../users/entity";
-import { Repository } from "../../users/repository";
-import errorHandler from "../../../internal/middleware/error-handler";
-import { setupPassport } from "../../../config/passport";
+import express from "express";
 import jwt from "jsonwebtoken";
+import request from "supertest";
+
+import { setupPassport } from "../../../config/passport";
+import errorHandler from "../../../internal/middleware/error-handler";
+import { User } from "../../users/entity";
+import { UserRepository } from "../../users/repository";
+import auth from "../index";
 
 jest.mock("../../users/repository");
 
@@ -38,10 +38,6 @@ const users: User[] = [
       "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
     enabled: 1,
     suspended: 0,
-    created_at: 1640908800,
-    updated_at: 1640908800,
-    created_by: faker.internet.exampleEmail(),
-    updated_by: faker.internet.exampleEmail(),
   },
   {
     id: 2,
@@ -50,10 +46,6 @@ const users: User[] = [
       "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
     enabled: 0,
     suspended: 0,
-    created_at: 1640908800,
-    updated_at: 1640908800,
-    created_by: faker.internet.exampleEmail(),
-    updated_by: faker.internet.exampleEmail(),
   },
   {
     id: 3,
@@ -62,18 +54,14 @@ const users: User[] = [
       "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
     enabled: 1,
     suspended: 1,
-    created_at: 1640908800,
-    updated_at: 1640908800,
-    created_by: faker.internet.exampleEmail(),
-    updated_by: faker.internet.exampleEmail(),
   },
 ];
 
-Repository.prototype.userByEmail = async (email: string) => {
+UserRepository.prototype.findOneByEmail = async (email: string) => {
   return users.find(user => user.email === email) || null;
 };
 
-setupPassport(Repository.prototype);
+setupPassport(UserRepository.prototype);
 
 function generateMockJWT(
   type: "ACCESS" | "REFRESH",

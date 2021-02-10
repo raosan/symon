@@ -29,7 +29,7 @@ export class OrganizationRepository {
     return data;
   }
 
-  async findOneByID({ id }: { id: number }): Promise<Organization | null> {
+  async findOneByID(id: number): Promise<Organization | null> {
     const data = await prisma.organization.findUnique({
       where: {
         id,
@@ -47,20 +47,16 @@ export class OrganizationRepository {
     return data;
   }
 
-  async update(
-    res: OrganizationUpdate & { id: number },
-  ): Promise<Organization> {
-    const { id, ...newData } = res;
-
+  async update(id: number, res: OrganizationUpdate): Promise<Organization> {
     const data = await prisma.organization.update({
       where: { id },
-      data: newData,
+      data: res,
     });
 
     return data;
   }
 
-  async destroy({ id }: { id: number }): Promise<number> {
+  async destroy(id: number): Promise<number> {
     await prisma.organization.delete({ where: { id } });
 
     return id;

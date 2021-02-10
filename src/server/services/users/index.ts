@@ -18,16 +18,17 @@
  **********************************************************************************/
 
 import express from "express";
-import { storeSchema, updateSchema } from "./schema";
+
 import validate from "../../internal/middleware/validator";
-import { index, store, show, update, destroy } from "./handler";
+import { create, destroy, findMany, findOneByID, update } from "./controller";
+import { createSchemaValidator, updateSchemaValidator } from "./validator";
 
 const router = express.Router();
 
-router.get("/v1/users", index);
-router.get("/v1/users/:id", show);
-router.post("/v1/users", validate(storeSchema), store);
-router.put("/v1/users/:id", validate(updateSchema), update);
+router.get("/v1/users", findMany);
+router.get("/v1/users/:id", findOneByID);
+router.post("/v1/users", validate(createSchemaValidator), create);
+router.put("/v1/users/:id", validate(updateSchemaValidator), update);
 router.delete("/v1/users/:id", destroy);
 
 export default router;

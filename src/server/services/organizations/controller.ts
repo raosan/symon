@@ -54,7 +54,7 @@ export async function findOneByID(
   const id = parseInt(req.params.id, 10);
 
   try {
-    const data = await repository.findOneByID({ id });
+    const data = await repository.findOneByID(id);
 
     if (!data) {
       const error = new AppError(
@@ -90,10 +90,7 @@ export async function create(
   try {
     const { name, description } = req.body;
 
-    const data = await repository.create({
-      name,
-      description,
-    });
+    const data = await repository.create({ name, description });
 
     res.status(201).send({ id: data.id });
   } catch (err) {
@@ -118,11 +115,7 @@ export async function update(
   const { name, description } = req.body;
 
   try {
-    await repository.update({
-      id,
-      name,
-      description,
-    });
+    await repository.update(id, { name, description });
 
     res.status(200).send({ id });
   } catch (err) {
@@ -146,7 +139,7 @@ export async function destroy(
   const id = parseInt(req.params.id, 10);
 
   try {
-    await repository.destroy({ id });
+    await repository.destroy(id);
 
     res.status(200).send({ message: "Successful" });
   } catch (err) {

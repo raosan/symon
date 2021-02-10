@@ -45,11 +45,7 @@ OrganizationRepository.prototype.findMany = async () => {
   return organizations;
 };
 
-OrganizationRepository.prototype.findOneByID = async ({
-  id,
-}: {
-  id: number;
-}) => {
+OrganizationRepository.prototype.findOneByID = async (id: number) => {
   return organizations.find(organization => organization.id === id) || null;
 };
 
@@ -63,13 +59,12 @@ OrganizationRepository.prototype.create = async (
 };
 
 OrganizationRepository.prototype.update = async (
-  userUpdate: OrganizationUpdate & { id: number },
+  id: number,
+  userUpdate: OrganizationUpdate,
 ) => {
-  const { id, ...newData } = userUpdate;
-
   organizations = organizations.map(organization => {
     if (organization.id === id) {
-      return { ...organization, newData };
+      return { ...organization, userUpdate };
     }
 
     return organization;
@@ -86,7 +81,7 @@ OrganizationRepository.prototype.update = async (
   return updatedData;
 };
 
-OrganizationRepository.prototype.destroy = async ({ id }: { id: number }) => {
+OrganizationRepository.prototype.destroy = async (id: number) => {
   organizations = organizations.filter(organization => organization.id !== id);
 
   return id;
@@ -139,11 +134,7 @@ describe("Organization Service", () => {
     });
 
     it("should return http status code 422", async done => {
-      OrganizationRepository.prototype.findOneByID = async ({
-        id,
-      }: {
-        id: number;
-      }) => {
+      OrganizationRepository.prototype.findOneByID = async (id: number) => {
         throw new Error(`query error id: ${id}`);
       };
 
@@ -214,10 +205,8 @@ describe("Organization Service", () => {
     });
 
     it("should return http status code 422", async done => {
-      OrganizationRepository.prototype.update = async (
-        data: OrganizationUpdate & { id: number },
-      ) => {
-        throw new Error(`query error id: ${data.id}`);
+      OrganizationRepository.prototype.update = async (id: number) => {
+        throw new Error(`query error id: ${id}`);
       };
 
       const res = await request(app).put("/v1/organizations/2").send({
@@ -240,12 +229,7 @@ describe("Organization Service", () => {
     });
 
     it("should return http status code 422", async done => {
-      // arrange
-      OrganizationRepository.prototype.destroy = async ({
-        id,
-      }: {
-        id: number;
-      }) => {
+      OrganizationRepository.prototype.destroy = async (id: number) => {
         throw new Error(`query error id: ${id}`);
       };
 

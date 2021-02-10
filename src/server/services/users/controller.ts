@@ -17,91 +17,119 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt";
-import { AppError, commonHTTPErrors } from "../../internal/app-error";
-import { Repository } from "./repository";
+import { NextFunction, Request, Response } from "express";
 
-export async function index(
-  _: Request,
+import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { UserRepository } from "./repository";
+
+export async function findMany(
+  req: Request<
+    null,
+    null,
+    null,
+    {
+      offset?: string;
+      size?: string;
+      order?: "asc" | "desc";
+    }
+  >,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
+  const repository = new UserRepository();
 
   try {
-    const data = await repo.users();
+    const data = await repository.findMany({
+      offset: parseInt(req.query.offset ?? "0", 10),
+      size: parseInt(req.query.size ?? "10", 10),
+      order: req.query.order ?? "asc",
+    });
 
-    res.status(200).send(data);
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully get list of users",
+      data,
+    });
   } catch (err) {
     const error = new AppError(
       commonHTTPErrors.unprocessableEntity,
       err.message,
       true,
     );
+
     next(error);
   }
 }
 
-export async function show(
+export async function findOneByID(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
+  const repository = new UserRepository();
+
+  const id = parseInt(req.params.id, 10);
 
   try {
-    const data = await repo.userByID(parseInt(req.params.id, 10));
+    const data = await repository.findOneByID(id);
+
     if (!data) {
       const error = new AppError(
         commonHTTPErrors.notFound,
         "User not found",
         true,
       );
+
       next(error);
+
       return;
     }
 
-    res.status(200).send(data);
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully get user",
+      data,
+    });
   } catch (err) {
     const error = new AppError(
       commonHTTPErrors.unprocessableEntity,
       err.message,
       true,
     );
+
     next(error);
   }
 }
 
-export async function store(
+export async function create(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
+  const repository = new UserRepository();
+
   const { email, password } = req.body;
-  const timeNow = Math.floor(Date.now() / 1000);
-  const repo = new Repository();
 
   try {
-    const passwordHash = await generatePasswordHash(password);
-    const data = await repo.create({
+    const data = await repository.create({
       email,
-      password_hash: passwordHash,
+      password,
       enabled: 1,
       suspended: 0,
-      created_at: timeNow,
-      updated_at: timeNow,
-      created_by: email,
-      updated_by: email,
     });
 
-    res.status(201).send({ id: data.id });
+    res.status(201).send({
+      result: "SUCCESS",
+      message: "Successfully create user",
+      data,
+    });
   } catch (err) {
     const error = new AppError(
       commonHTTPErrors.unprocessableEntity,
       err.message,
       true,
     );
+
     next(error);
   }
 }
@@ -111,27 +139,26 @@ export async function update(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const { id } = req.params;
+  const repository = new UserRepository();
+
+  const id = parseInt(req.params.id, 10);
   const { enabled, suspended } = req.body;
-  const timeNow = Math.floor(Date.now() / 1000);
-  const repo = new Repository();
 
   try {
-    // update record
-    await repo.update({
-      id: parseInt(id, 10),
-      enabled,
-      suspended,
-      updated_at: timeNow,
-    });
+    const data = await repository.update(id, { enabled, suspended });
 
-    res.status(200).send({ id });
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully update user",
+      data,
+    });
   } catch (err) {
     const error = new AppError(
       commonHTTPErrors.unprocessableEntity,
       err.message,
       true,
     );
+
     next(error);
   }
 }
@@ -141,29 +168,24 @@ export async function destroy(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const { id } = req.params;
-  const repo = new Repository();
+  const repository = new UserRepository();
+
+  const id = parseInt(req.params.id, 10);
 
   try {
-    // delete record
-    await repo.delete(parseInt(id, 10));
+    await repository.destroy(id);
 
-    res.status(202).send();
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully delete user",
+    });
   } catch (err) {
     const error = new AppError(
       commonHTTPErrors.unprocessableEntity,
       err.message,
       true,
     );
+
     next(error);
   }
-}
-
-async function generatePasswordHash(
-  plainTextPassword: string,
-): Promise<string> {
-  const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(plainTextPassword, saltRounds);
-
-  return passwordHash;
 }
