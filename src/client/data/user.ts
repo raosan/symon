@@ -17,4 +17,57 @@
  *                                                                                *
  **********************************************************************************/
 
-export { Login as default } from "./Login";
+import { useMutation, UseMutationResult } from "react-query";
+
+import { post } from "./requests";
+
+type UseLoginData = {
+  result: string;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+  };
+};
+
+type UseLoginVariables = { email: string; password: string };
+
+export const useLogin = (): UseMutationResult<
+  UseLoginData,
+  Error,
+  UseLoginVariables,
+  unknown
+> => {
+  return useMutation(async variables => post("/auth", { body: variables }), {
+    onSuccess(response) {
+      setToken(response.data);
+    },
+  });
+};
+
+export const setToken = (data: {
+  accessToken: string;
+  refreshToken: string;
+}): void => {
+  const { accessToken, refreshToken } = data;
+
+  if (accessToken) {
+    window.localStorage.setItem("at", accessToken);
+    if (refreshToken) {
+      window.localStorage.setItem("rt", refreshToken);
+    }
+  } else {
+    window.localStorage.removeItem("at");
+    window.localStorage.removeItem("rt");
+  }
+};
+
+export const getSavedTokens = (): {
+  accessToken: string;
+  refreshToken: string;
+} => {
+  return {
+    accessToken: window.localStorage.getItem("at") || "",
+    refreshToken: window.localStorage.getItem("rt") || "",
+  };
+};

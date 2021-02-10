@@ -17,4 +17,14 @@
  *                                                                                *
  **********************************************************************************/
 
-export { Login as default } from "./Login";
+import { FC, InputHTMLAttributes } from "react";
+
+export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+
+export const Input: FC<InputProps> = props => (
+  <input
+    {...props}
+    type={props.type || "text"}
+    className="block w-full px-3 py-2 text-base sm:text-sm border border-gray-300 focus:outline-none rounded-md"
+  />
+);

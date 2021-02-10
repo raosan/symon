@@ -17,4 +17,45 @@
  *                                                                                *
  **********************************************************************************/
 
-export { Login as default } from "./Login";
+import { getSavedTokens } from "./user";
+
+// TODO: add env configuration in webpack and set this through env
+const apiURL = "/api";
+const apiPrefix = "/v1";
+const baseURL = apiURL + apiPrefix;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetcher = async <T = any>(
+  path: string,
+  option: {
+    body: unknown;
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  },
+): Promise<T> => {
+  const { body, method } = option;
+  const { accessToken } = getSavedTokens();
+
+  const response = await fetch(`${baseURL}${path}`, {
+    method: method,
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: body ? JSON.stringify(body) : null,
+  });
+
+  const jsonResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(jsonResponse.message);
+  }
+
+  return jsonResponse;
+};
+
+export const post = <T>(
+  path: string,
+  option: {
+    body: unknown;
+  },
+): Promise<T> => fetcher<T>(path, { ...option, method: "POST" });

@@ -17,4 +17,4 @@
  *                                                                                *
  **********************************************************************************/
 
-export { Login as default } from "./Login";
+export { Input as default } from "./Input";

@@ -18,12 +18,19 @@
  **********************************************************************************/
 
 import { BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { RouterConfig } from "./navigation";
 
+const queryClient = new QueryClient();
+
 const App = (): JSX.Element => (
-  <Router>
-    <RouterConfig />
-  </Router>
+  <QueryClientProvider client={queryClient}>
+    <Router>
+      <RouterConfig />
+    </Router>
+    <ReactQueryDevtools initialIsOpen={false} />
+  </QueryClientProvider>
 );
 
 export default App;
