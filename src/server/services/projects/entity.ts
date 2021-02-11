@@ -17,23 +17,12 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+export interface Project {
+  id: number;
+  name: string;
+  organization_id: number;
+}
 
-import auth from "./services/auth";
-import organizations from "./services/organizations";
-import projects from "./services/projects";
-import users from "./services/users";
+export type ProjectCreate = Omit<Project, "id">;
 
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(users);
-router.use(organizations);
-router.use(projects);
-
-export default router;
+export type ProjectUpdate = Omit<Project, "id">;

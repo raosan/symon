@@ -19,21 +19,16 @@
 
 import express from "express";
 
-import auth from "./services/auth";
-import organizations from "./services/organizations";
-import projects from "./services/projects";
-import users from "./services/users";
+import validate from "../../internal/middleware/validator";
+import { create, destroy, findMany, findOneByID, update } from "./controller";
+import { createSchemaValidator, updateSchemaValidator } from "./validator";
 
 const router = express.Router();
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(users);
-router.use(organizations);
-router.use(projects);
+router.get("/v1/projects", findMany);
+router.get("/v1/projects/:id", findOneByID);
+router.post("/v1/projects", validate(createSchemaValidator), create);
+router.put("/v1/projects/:id", validate(updateSchemaValidator), update);
+router.delete("/v1/projects/:id", destroy);
 
 export default router;

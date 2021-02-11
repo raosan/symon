@@ -20,3 +20,9 @@ model organization {
   name          String 
   description   String 
 }
+
+model project {
+  id                Int     @id @default(autoincrement())
+  name              String
+  organization_id   Int
+}

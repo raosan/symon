@@ -17,23 +17,62 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { PrismaClient } from "@prisma/client";
+import { Project, ProjectCreate, ProjectUpdate } from "./entity";
 
-import auth from "./services/auth";
-import organizations from "./services/organizations";
-import projects from "./services/projects";
-import users from "./services/users";
+const prisma = new PrismaClient();
 
-const router = express.Router();
+export class ProjectRepository {
+  async findMany({
+    offset,
+    size,
+    order,
+  }: {
+    offset: number;
+    size: number;
+    order: "asc" | "desc";
+  }): Promise<Project[]> {
+    const data = await prisma.project.findMany({
+      skip: offset,
+      take: size,
+      orderBy: {
+        id: order,
+      },
+    });
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
+    return data;
+  }
 
-router.use(auth);
+  async findOneByID(id: number): Promise<Project | null> {
+    const data = await prisma.project.findUnique({
+      where: {
+        id,
+      },
+    });
 
-router.use(users);
-router.use(organizations);
-router.use(projects);
+    return data;
+  }
 
-export default router;
+  async create(res: ProjectCreate): Promise<Project> {
+    const data = await prisma.project.create({
+      data: res,
+    });
+
+    return data;
+  }
+
+  async update(id: number, res: ProjectUpdate): Promise<Project> {
+    const data = await prisma.project.update({
+      where: { id },
+      data: res,
+    });
+
+    return data;
+  }
+
+  async destroy(id: number): Promise<number> {
+    await prisma.project.delete({ where: { id } });
+
+    return id;
+  }
+}
