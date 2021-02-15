@@ -17,49 +17,50 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import { PrismaClient } from "@prisma/client";
+import { Location, LocationCreate, LocationUpdate } from "./entity";
 
-import { cfg } from "../config";
-import * as http from "http";
+const prisma = new PrismaClient();
 
-import { requestLogger, expressErrorLogger, logger } from "./internal/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
-
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
+export class LocationRepository {
+  async findMany(offset: number, size: number): Promise<Location[]> {
+    const data = await prisma.location.findMany({
+      skip: offset,
+      take: size,
+    });
+    return data;
   }
-};
 
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+  async findById(id: number): Promise<Location | null> {
+    const data = await prisma.location.findUnique({
+      where: { entityId: id },
+    });
+
+    return data;
+  }
+
+  async create(locationInput: LocationCreate): Promise<Location> {
+    const data = await prisma.location.create({
+      data: locationInput,
+    });
+
+    return data;
+  }
+
+  async update(locationUpdate: LocationUpdate): Promise<Location> {
+    const { entityId, ...newData } = locationUpdate;
+    const data = await prisma.location.update({
+      where: { entityId },
+      data: newData,
+    });
+    return data;
+  }
+
+  async delete(id: number): Promise<number> {
+    await prisma.location.delete({
+      where: { entityId: id },
+    });
+
+    return id;
+  }
+}

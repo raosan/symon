@@ -1735,7 +1735,7 @@
             "in": "query",
             "required": false,
             "name": "sort",
-            "description": "Sort order of organization name",
+            "description": "Sort order of location name",
             "type": "string",
             "enum": ["NAME", "COUNTRY", "DATACENTER"]
           },
@@ -1743,7 +1743,7 @@
             "in": "query",
             "required": false,
             "name": "order",
-            "description": "Sort order of organization name",
+            "description": "Sort order of location name",
             "type": "string",
             "enum": ["ASC", "DESC"]
           }
@@ -1780,10 +1780,12 @@
             "description": "Not authorized"
           }
         }
-      },
+      }
+    },
+    "/location": {
       "post": {
         "tags": ["Location Management"],
-        "summary": "To create new organization",
+        "summary": "To create new location",
         "description": "TBD",
         "operationId": "CreateLocation",
         "consumes": ["application/json"],
@@ -1792,8 +1794,8 @@
           {
             "in": "body",
             "required": true,
-            "name": "organization",
-            "description": "Organization information to create",
+            "name": "location",
+            "description": "Location information to create",
             "schema": {
               "$ref": "#/definitions/CreateLocation"
             }
@@ -1805,8 +1807,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful",
+          "201": {
+            "description": "Created",
             "schema": {
               "allOf": [
                 {
@@ -1839,7 +1841,7 @@
     "/locations/{locationEntityID}": {
       "get": {
         "tags": ["Location Management"],
-        "summary": "To get organization detail",
+        "summary": "To get location detail",
         "description": "TBD",
         "operationId": "GetLocation",
         "consumes": ["application/json"],
@@ -1888,7 +1890,7 @@
       },
       "put": {
         "tags": ["Location Management"],
-        "summary": "To change organization detail",
+        "summary": "To change location detail",
         "description": "TBD",
         "operationId": "UpdateLocation",
         "consumes": ["application/json"],
@@ -1905,7 +1907,7 @@
             "in": "body",
             "required": true,
             "name": "user",
-            "description": "Organization information to update",
+            "description": "location information to update",
             "schema": {
               "$ref": "#/definitions/CreateLocation"
             }
@@ -1917,8 +1919,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful",
+          "201": {
+            "description": "Created",
             "schema": {
               "allOf": [
                 {

@@ -23,6 +23,7 @@ import auth from "./services/auth";
 import organizations from "./services/organizations";
 import projects from "./services/projects";
 import users from "./services/users";
+import locations from "./services/locations";
 
 const router = express.Router();
 
@@ -34,6 +35,7 @@ router.use(auth);
 
 router.use(users);
 router.use(organizations);
+router.use(locations);
 router.use(projects);
 
 export default router;

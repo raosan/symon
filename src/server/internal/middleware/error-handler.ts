@@ -19,7 +19,7 @@
 
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { AppError } from "../app-error";
-import { logger } from "../../../utils/logger";
+import { logger } from "../logger";
 
 export default function errorHandler(): ErrorRequestHandler {
   return (err: AppError, _: Request, res: Response, __: NextFunction) => {

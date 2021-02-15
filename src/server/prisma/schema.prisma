@@ -21,6 +21,17 @@ model organization {
   description   String 
 }
 
+model location {
+  entityId     Int    @id @default(autoincrement())
+  locationName String
+  countryCode  String
+  dataCenter   String
+  createdAt    Int
+  updatedAt    Int
+  createdBy    String
+  updatedBy    String
+}
+
 model project {
   id                Int     @id @default(autoincrement())
   name              String

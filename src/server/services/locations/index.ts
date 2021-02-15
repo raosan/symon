@@ -18,48 +18,20 @@
  **********************************************************************************/
 
 import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import validate from "../../internal/middleware/validator";
+import {
+  createSchemaValidator,
+  findSchemaValidator,
+  updateSchemaValidator,
+} from "./schema";
+import { create, destroy, findById, findMany, update } from "./handler";
 
-import { cfg } from "../config";
-import * as http from "http";
+const router = express.Router();
 
-import { requestLogger, expressErrorLogger, logger } from "./internal/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
+router.get("/v1/locations", validate(findSchemaValidator), findMany);
+router.get("/v1/locations/:id", findById);
+router.post("/v1/location", validate(createSchemaValidator), create);
+router.put("/v1/locations/:id", validate(updateSchemaValidator), update);
+router.delete("/v1/locations/:id", destroy);
 
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
-  }
-};
-
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+export default router;

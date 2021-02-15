@@ -19,11 +19,11 @@
 
 import express from "express";
 import request from "supertest";
-import { logger } from "../../../../utils/logger";
+import { logger } from "../../logger";
 import { AppError, commonHTTPErrors } from "../../app-error";
 import errorHandler from "../error-handler";
 
-jest.mock("../../../../utils/logger");
+jest.mock("../../logger");
 const logError = jest.fn();
 logger.error = logError;
 

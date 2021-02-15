@@ -17,49 +17,34 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "./swagger.json";
+import winston from "winston";
+import expressWinston from "express-winston";
+import { cfg } from "../../config";
 
-import { cfg } from "../config";
-import * as http from "http";
+const transports = [
+  new winston.transports.Console({
+    level: cfg.env === "production" ? "info" : "debug",
+  }),
+];
 
-import { requestLogger, expressErrorLogger, logger } from "./internal/logger";
-import bodyParser = require("body-parser");
-import errorHandler from "./internal/middleware/error-handler";
-import notFound from "./internal/middleware/not-found";
-import router from "./router";
-
-const app: express.Application = express();
-const port = cfg.port || 8080;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
-app.use(expressErrorLogger);
-
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(router);
-
-app.use(errorHandler());
-app.use(notFound());
-
-let server: http.Server;
-(async () => {
-  server = app.listen(port, () => {
-    logger.info(`  Listening on port ${port} in ${cfg.env} mode`);
-    logger.info("  Press CTRL-C to stop\n");
-  });
-})();
-
-const stopServer = async () => {
-  logger.info("  Shutting down the server . . .");
-  if (server.listening) {
-    logger.close();
-    server.close();
-  }
+const options: winston.LoggerOptions = {
+  transports,
 };
 
-// gracefully shutdown system if these processes is occured
-process.on("SIGINT", stopServer);
-process.on("SIGTERM", stopServer);
+export const requestLogger = expressWinston.logger({
+  transports,
+  format: winston.format.combine(winston.format.json()),
+  expressFormat: true,
+  colorize: false,
+  level: "debug",
+});
+
+export const expressErrorLogger = expressWinston.errorLogger({
+  transports,
+  format: winston.format.combine(winston.format.json()),
+  msg:
+    "{{err.message}} {{res.statusCode}} {{req.method}} with error: {{err}} and request: {{req}} and response: {{res}}",
+});
+
+export const logger = winston.createLogger(options);
+logger.debug("  Logging initialized at debug level");
