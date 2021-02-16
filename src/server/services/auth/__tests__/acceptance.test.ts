@@ -27,6 +27,7 @@ import errorHandler from "../../../internal/middleware/error-handler";
 import { User } from "../../users/entity";
 import { UserRepository } from "../../users/repository";
 import auth from "../index";
+import { cfg } from "../../../../config/index";
 
 jest.mock("../../users/repository");
 
@@ -73,6 +74,7 @@ export function generateMockJWT(
 ): string {
   const JWT_SECRET = secret || process.env.JWT_SECRET || "jwtSecret";
   const JWT_ISSUER = issuer || process.env.JWT_ISSUER || "symon.org";
+  const JWT_ALGORITHM = cfg.jwtAlgorithm;
 
   return jwt.sign(
     {
@@ -85,7 +87,7 @@ export function generateMockJWT(
       jit: uuid,
     },
     JWT_SECRET,
-    { expiresIn: type === "ACCESS" ? "5m" : "1y" },
+    { expiresIn: type === "ACCESS" ? "5m" : "1y", algorithm: JWT_ALGORITHM },
   );
 }
 

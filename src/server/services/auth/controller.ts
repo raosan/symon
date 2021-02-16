@@ -31,6 +31,7 @@ const JWT_SECRET = cfg.jwtSecret;
 const JWT_ISSUER = cfg.jwtIssuer;
 const JWT_ACCESS_EXPIRED = cfg.jwtAccessExpired;
 const JWT_REFRESH_EXPIRED = cfg.jwtRefreshExpired;
+const JWT_ALGORITHM = cfg.jwtAlgorithm;
 
 const repo = new UserRepository();
 
@@ -158,6 +159,9 @@ function generateJWT(type: "ACCESS" | "REFRESH", email: string, uuid: string) {
       jit: uuid,
     },
     JWT_SECRET,
-    { expiresIn: type === "ACCESS" ? JWT_ACCESS_EXPIRED : JWT_REFRESH_EXPIRED },
+    {
+      expiresIn: type === "ACCESS" ? JWT_ACCESS_EXPIRED : JWT_REFRESH_EXPIRED,
+      algorithm: JWT_ALGORITHM,
+    },
   );
 }

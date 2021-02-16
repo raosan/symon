@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 import dotenv from "dotenv";
+import { Algorithm as JWTAlgorithm } from "jsonwebtoken";
 
 dotenv.config();
 
@@ -28,7 +29,20 @@ interface Config {
   jwtIssuer: string;
   jwtAccessExpired: string;
   jwtRefreshExpired: string;
+  jwtAlgorithm: JWTAlgorithm;
 }
+
+declare const process: {
+  env: {
+    NODE_ENV: string;
+    PORT: string;
+    JWT_SECRET: string;
+    JWT_ACCESS_EXPIRED: string;
+    JWT_ISSUER: string;
+    JWT_REFRESH_EXPIRED: string;
+    JWT_ALGORITHM: JWTAlgorithm;
+  };
+};
 
 export const cfg: Config = {
   env: process.env.NODE_ENV || "production",
@@ -37,4 +51,5 @@ export const cfg: Config = {
   jwtIssuer: process.env.JWT_ISSUER || "symon.org",
   jwtAccessExpired: process.env.JWT_ACCESS_EXPIRED || "5m",
   jwtRefreshExpired: process.env.JWT_REFRESH_EXPIRED || "1y",
+  jwtAlgorithm: process.env.JWT_ALGORITHM || "HS256",
 };
