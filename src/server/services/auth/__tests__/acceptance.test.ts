@@ -17,6 +17,7 @@
  *                                                                                *
  **********************************************************************************/
 
+import argon2 from "argon2";
 import bodyParser from "body-parser";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -100,6 +101,8 @@ describe("Auth Service", () => {
 
   describe("POST /v1/auth", () => {
     it("should return http status code 200", async done => {
+      jest.spyOn(argon2, "verify").mockResolvedValue(true);
+
       // act
       const res = await request(app).post("/v1/auth").send({
         email: "foo@bar.com",
@@ -124,6 +127,8 @@ describe("Auth Service", () => {
     });
 
     it("should return http status code 401 wrong password", async done => {
+      jest.spyOn(argon2, "verify").mockResolvedValue(false);
+
       // act
       const res = await request(app).post("/v1/auth").send({
         email: "foo@bar.com",

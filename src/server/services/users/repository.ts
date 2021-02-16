@@ -17,7 +17,7 @@
  *                                                                                *
  **********************************************************************************/
 
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -33,6 +33,7 @@ export class UserRepository {
     email: true,
     enabled: true,
     suspended: true,
+    password_hash: true,
   };
 
   async findMany({
@@ -104,8 +105,7 @@ export class UserRepository {
   }
 
   async generatePasswordHash(plainTextPassword: string): Promise<string> {
-    const saltRounds = 10;
-    const passwordHashed = await bcrypt.hash(plainTextPassword, saltRounds);
+    const passwordHashed = await argon2.hash(plainTextPassword);
 
     return passwordHashed;
   }

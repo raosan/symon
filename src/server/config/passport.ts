@@ -1,19 +1,32 @@
-import bcrypt from "bcrypt";
+/**********************************************************************************
+ *                                                                                *
+ *    Copyright (C) 2021  SYMON Contributors                                      *
+ *                                                                                *
+ *   This program is free software: you can redistribute it and/or modify         *
+ *   it under the terms of the GNU Affero General Public License as published     *
+ *   by the Free Software Foundation, either version 3 of the License, or         *
+ *   (at your option) any later version.                                          *
+ *                                                                                *
+ *   This program is distributed in the hope that it will be useful,              *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of               *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                *
+ *   GNU Affero General Public License for more details.                          *
+ *                                                                                *
+ *   You should have received a copy of the GNU Affero General Public License     *
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.       *
+ *                                                                                *
+ **********************************************************************************/
+
+import argon2 from "argon2";
 import passport from "passport";
-import * as passportLocal from "passport-local";
 import * as passportJwt from "passport-jwt";
-import { UserRepository } from "../services/users/repository";
+import * as passportLocal from "passport-local";
+
 import { cfg } from "../../config";
+import { UserRepository } from "../services/users/repository";
 
 const LocalStrategy = passportLocal.Strategy;
 const JwtStrategy = passportJwt.Strategy;
-
-export function validatePassword(
-  password: string,
-  password_hash: string,
-): boolean {
-  return bcrypt.compareSync(password, password_hash);
-}
 
 export function setupPassport(repo: UserRepository): void {
   const options = {
@@ -30,9 +43,15 @@ export function setupPassport(repo: UserRepository): void {
             return done(null, false, { message: "Email not found." });
           }
 
-          if (!validatePassword(password, user.password_hash)) {
+          const isValidPassword = await argon2.verify(
+            user.password_hash,
+            password,
+          );
+
+          if (!isValidPassword) {
             return done(null, false, { message: "Incorrect password." });
           }
+
           return done(null, user);
         })
         .catch(done);
@@ -55,6 +74,7 @@ export function setupPassportJwt(repo: UserRepository): void {
           if (user) {
             return done(null, user);
           }
+
           return done(null, false);
         })
         .catch(err => {
