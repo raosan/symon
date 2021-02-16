@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 import express from "express";
-import { login, refresh } from "./handler";
+import { login, refresh } from "./controller";
 
 const router = express.Router();
 

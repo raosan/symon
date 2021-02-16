@@ -20,6 +20,7 @@
 import express from "express";
 
 import auth from "./services/auth";
+import authMiddleware from "./services/auth/middleware";
 import organizations from "./services/organizations";
 import projects from "./services/projects";
 import users from "./services/users";
@@ -33,9 +34,19 @@ router.get("/", (_, res) => {
 
 router.use(auth);
 
+router.use(authMiddleware);
+
+// ********************************
+// Protected Endpoints ************
+// ********************************
+
 router.use(users);
 router.use(organizations);
 router.use(locations);
 router.use(projects);
+
+// ********************************
+// End of Protected Endpoints *****
+// ********************************
 
 export default router;

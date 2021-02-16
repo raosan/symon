@@ -63,14 +63,16 @@ UserRepository.prototype.findOneByEmail = async (email: string) => {
 
 setupPassport(UserRepository.prototype);
 
-function generateMockJWT(
+export function generateMockJWT(
   type: "ACCESS" | "REFRESH",
   email: string,
   uuid: string,
   createdAt: number, // added parameter to mock time
-) {
-  const JWT_SECRET = process.env.JWT_SECRET || "jwtSecret";
-  const JWT_ISSUER = process.env.JWT_ISSUER || "symon.org";
+  issuer?: string | undefined,
+  secret?: string | undefined,
+): string {
+  const JWT_SECRET = secret || process.env.JWT_SECRET || "jwtSecret";
+  const JWT_ISSUER = issuer || process.env.JWT_ISSUER || "symon.org";
 
   return jwt.sign(
     {

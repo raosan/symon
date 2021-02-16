@@ -21,8 +21,11 @@ import bodyParser from "body-parser";
 import express from "express";
 import faker from "faker";
 import request from "supertest";
+import { setupPassportJwt } from "../../../config/passport";
 
 import errorHandler from "../../../internal/middleware/error-handler";
+import authMiddleware from "../../auth/middleware";
+import { generateMockJWT } from "../../auth/__tests__/acceptance.test";
 import { User, UserCreate, UserUpdate } from "../entity";
 import user from "../index";
 import { UserRepository } from "../repository";
@@ -34,6 +37,14 @@ let users: User[] = [
     id: 1,
     email: faker.internet.email(),
     password_hash: faker.internet.password(),
+    enabled: 1,
+    suspended: 0,
+  },
+  {
+    id: 6,
+    email: "foo@bar.com",
+    password_hash:
+      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
     enabled: 1,
     suspended: 0,
   },
@@ -81,6 +92,8 @@ UserRepository.prototype.destroy = async (id: number) => {
 
   return id;
 };
+
+setupPassportJwt(UserRepository.prototype);
 
 describe("User Service", () => {
   const app = express();
@@ -201,7 +214,7 @@ describe("User Service", () => {
       });
 
       expect(res.status).toBe(200);
-      expect(users.length).toBe(2);
+      expect(users.length).toBe(3);
       done();
     });
 
@@ -252,6 +265,118 @@ describe("User Service", () => {
       const res = await request(app).delete("/v1/users/3");
 
       expect(res.status).toBe(422);
+      done();
+    });
+  });
+});
+
+describe("User Service with Auth Middleware", () => {
+  const app = express();
+  app.use(bodyParser.json());
+  app.use(authMiddleware);
+  app.use(user);
+  app.use(errorHandler());
+
+  describe("GET /v1/users", () => {
+    it("should return http status code 200", async done => {
+      UserRepository.prototype.findMany = async () => {
+        return users;
+      };
+
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockToken = generateMockJWT(
+        "ACCESS",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      const res = await request(app)
+        .get("/v1/users")
+        .auth(mockToken, { type: "bearer" });
+
+      expect(res.status).toStrictEqual(200);
+      done();
+    });
+
+    it("should return http status code 401 user not found", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockToken = generateMockJWT(
+        "ACCESS",
+        "false@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      const res = await request(app)
+        .get("/v1/users")
+        .auth(mockToken, { type: "bearer" });
+
+      expect(res.status).toStrictEqual(401);
+      done();
+    });
+
+    it("should return http status code 401 expired token", async done => {
+      //arrange
+      const now = new Date(2018);
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockToken = generateMockJWT(
+        "ACCESS",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+      );
+
+      const res = await request(app)
+        .get("/v1/users")
+        .auth(mockToken, { type: "bearer" });
+
+      expect(res.status).toStrictEqual(401);
+      done();
+    });
+
+    it("should return http status code 401 wrong issuer", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockToken = generateMockJWT(
+        "ACCESS",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+        "wrong@issuer",
+      );
+
+      const res = await request(app)
+        .get("/v1/users")
+        .auth(mockToken, { type: "bearer" });
+
+      expect(res.status).toStrictEqual(401);
+      done();
+    });
+
+    it("should return http status code 401 wrong secret", async done => {
+      //arrange
+      const now = new Date();
+      const unixTime = Math.floor(now.getTime() / 1000);
+      const mockToken = generateMockJWT(
+        "ACCESS",
+        "foo@bar.com",
+        "randomUUID",
+        unixTime,
+        process.env.ISSUER,
+        "wrong secret",
+      );
+
+      const res = await request(app)
+        .get("/v1/users")
+        .auth(mockToken, { type: "bearer" });
+
+      expect(res.status).toStrictEqual(401);
       done();
     });
   });
