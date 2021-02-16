@@ -61,11 +61,11 @@
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "foo@bar.com",
+                  "example": "admin@symon.org",
                   "type": "string"
                 },
                 "password": {
-                  "example": "thisAintNoSecret",
+                  "example": "right password",
                   "type": "string"
                 }
               }

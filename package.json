@@ -25,7 +25,8 @@
     "test:server:watch": "jest --config src/server/jest.config.js --watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "cypress:open": "npx cypress open"
+    "cypress:open": "npx cypress open",
+    "seed": "cd src/server && npx prisma db seed --preview-feature && cd ../../../"
   },
   "repository": {
     "type": "git",
