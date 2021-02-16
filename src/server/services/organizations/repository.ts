@@ -23,8 +23,22 @@ import { Organization, OrganizationCreate, OrganizationUpdate } from "./entity";
 const prisma = new PrismaClient();
 
 export class OrganizationRepository {
-  async findMany(): Promise<Organization[]> {
-    const data = await prisma.organization.findMany();
+  async findMany({
+    offset,
+    size,
+    order,
+  }: {
+    offset: number;
+    size: number;
+    order: "asc" | "desc";
+  }): Promise<Organization[]> {
+    const data = await prisma.organization.findMany({
+      skip: offset,
+      take: size,
+      orderBy: {
+        id: order,
+      },
+    });
 
     return data;
   }

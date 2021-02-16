@@ -23,14 +23,27 @@ import { AppError, commonHTTPErrors } from "../../internal/app-error";
 import { OrganizationRepository } from "./repository";
 
 export async function findMany(
-  _: Request,
+  req: Request<
+    null,
+    null,
+    null,
+    {
+      offset?: string;
+      size?: string;
+      order?: "asc" | "desc";
+    }
+  >,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
   const repository = new OrganizationRepository();
 
   try {
-    const data = await repository.findMany();
+    const data = await repository.findMany({
+      offset: parseInt(req.query.offset ?? "0", 10),
+      size: parseInt(req.query.size ?? "10", 10),
+      order: req.query.order ?? "asc",
+    });
 
     res.status(200).send(data);
   } catch (err) {
