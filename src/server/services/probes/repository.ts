@@ -17,38 +17,64 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { PrismaClient, probe } from "@prisma/client";
+import { ProbeCreate, ProbeUpdate } from "./entity";
 
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
-import locations from "./services/locations";
+const prisma = new PrismaClient();
 
-const router = express.Router();
+export class Repository {
+  async findMany(args?: {
+    skip?: number;
+    take?: number;
+    orderBy?: any;
+    where?: any;
+  }): Promise<probe[]> {
+    const data = await prisma.probe.findMany(args);
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
+    return data;
+  }
 
-router.use(auth);
+  async count(args?: { where: any }): Promise<number> {
+    const total = await prisma.probe.count(args);
 
-router.use(authMiddleware);
+    return total;
+  }
 
-// ********************************
-// Protected Endpoints ************
-// ********************************
+  async findById(id: number): Promise<probe | null> {
+    const result = await prisma.probe.findUnique({
+      where: { id },
+    });
 
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
+    return result;
+  }
 
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
+  async create(data: ProbeCreate): Promise<probe> {
+    const result = await prisma.probe.create({
+      data: {
+        projectID: data.projectID,
+        probeName: data.probeName,
+        status: data.status,
+        runMode: data.runMode,
+        cron: data.cron,
+      },
+    });
 
-export default router;
+    return result;
+  }
+
+  async update(data: ProbeUpdate): Promise<probe> {
+    const { id, probeName } = data;
+    const result = await prisma.probe.update({
+      where: { id },
+      data: { probeName },
+    });
+
+    return result;
+  }
+
+  async deleteByID(id: number): Promise<void> {
+    await prisma.location.delete({
+      where: { entityId: id },
+    });
+  }
+}

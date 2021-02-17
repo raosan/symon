@@ -17,38 +17,12 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { object, string } from "joi";
 
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
-import locations from "./services/locations";
-
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
+export const createValidator = object().keys({
+  probeName: string().required().label("Probe Name"),
 });
 
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
-
-export default router;
+export const scheduleValidator = object().keys({
+  cron: string().required().label("Cron"),
+});

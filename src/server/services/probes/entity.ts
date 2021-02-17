@@ -17,38 +17,18 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+export interface ProbeCreate {
+  projectID: number;
+  probeName: string;
+  status: string;
+  runMode: string;
+  cron: string;
+}
 
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
-import locations from "./services/locations";
-
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
-
-export default router;
+export interface ProbeUpdate {
+  id: number;
+  probeName?: string;
+  status?: string;
+  runMode?: string;
+  cron?: string;
+}

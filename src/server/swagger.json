@@ -1361,7 +1361,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful",
             "schema": {
               "allOf": [
@@ -1395,7 +1395,7 @@
     "/probes/{probeEntityID}": {
       "get": {
         "tags": ["Probe Management"],
-        "summary": "To get organization detail",
+        "summary": "To get probe detail",
         "description": "TBD",
         "operationId": "GetProbe",
         "consumes": ["application/json"],
@@ -1444,7 +1444,7 @@
       },
       "put": {
         "tags": ["Probe Management"],
-        "summary": "To change project detail",
+        "summary": "To change probe detail",
         "description": "TBD",
         "operationId": "UpdateProbe",
         "consumes": ["application/json"],
@@ -1500,6 +1500,9 @@
           },
           "404": {
             "description": "Not found"
+          },
+          "409": {
+            "description": "Probe name already exist"
           }
         }
       },
@@ -1546,8 +1549,8 @@
     "/probes/{probeEntityID}/start": {
       "put": {
         "tags": ["Probe Management"],
-        "summary": "To start a speciffic probe",
-        "description": "To start a speciffic probe. If mode is CRON it start the probe to trigger according to schedule. If mode is MANUAL, probe will be triggered and the status will back to STOP",
+        "summary": "To start a specific probe",
+        "description": "To start a specific probe. If mode is CRON it start the probe to trigger according to schedule. If mode is MANUAL, probe will be triggered and the status will back to STOP",
         "operationId": "StartProbe",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -1590,7 +1593,7 @@
     "/probes/{probeEntityID}/stop": {
       "put": {
         "tags": ["Probe Management"],
-        "summary": "To start a speciffic probe",
+        "summary": "To stop a specific probe",
         "description": "TBD",
         "operationId": "StopProbe",
         "consumes": ["application/json"],
@@ -1631,8 +1634,8 @@
     "/probes/{probeEntityID}/schedule": {
       "put": {
         "tags": ["Probe Management"],
-        "summary": "To schedule a speciffic probe",
-        "description": "To schedule a speciffic probe, successfuly calling this endpoint will set the mode automaticaly to CRON",
+        "summary": "To schedule a specific probe",
+        "description": "To schedule a specific probe, successfuly calling this endpoint will set the mode automaticaly to CRON",
         "operationId": "ScheduleProbe",
         "consumes": ["application/json"],
         "produces": ["application/json"],
@@ -2061,6 +2064,10 @@
         }
       ],
       "properties": {
+        "projectID": {
+          "type": "integer",
+          "example": 1
+        },
         "status": {
           "type": "string",
           "enum": ["RUN", "STOP"]

@@ -17,38 +17,30 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { Router } from "express";
 
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
-import locations from "./services/locations";
+import validate from "../../internal/middleware/validator";
+import {
+  index,
+  create,
+  show,
+  update,
+  destroy,
+  schedule,
+  start,
+  stop,
+} from "./handler";
+import { createValidator, scheduleValidator } from "./validator";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
+router.get("/v1/projects/:id/probes", index);
+router.post("/v1/projects/:id/probes", validate(createValidator), create);
+router.get("/v1/probes/:id", show);
+router.put("/v1/probes/:id", validate(createValidator), update);
+router.delete("/v1/probes/:id", destroy);
+router.put("/v1/probes/:id/start", start);
+router.put("/v1/probes/:id/stop", stop);
+router.put("/v1/probes/:id/schedule", validate(scheduleValidator), schedule);
 
 export default router;

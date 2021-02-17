@@ -16,9 +16,9 @@ model user {
 }
 
 model organization {
-  id            Int    @id @default(autoincrement())
-  name          String 
-  description   String 
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
 }
 
 model location {
@@ -33,7 +33,18 @@ model location {
 }
 
 model project {
-  id                Int     @id @default(autoincrement())
-  name              String
-  organization_id   Int
+  id              Int     @id @default(autoincrement())
+  name            String
+  organization_id Int
+  probe           probe[]
+}
+
+model probe {
+  id        Int     @id @default(autoincrement())
+  projectID Int
+  probeName String
+  status    String
+  runMode   String
+  cron      String
+  project   project @relation(fields: [projectID], references: [id])
 }
