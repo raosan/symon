@@ -174,7 +174,7 @@ export async function destroy(
   const id = parseInt(req.params.id, 10);
 
   try {
-    const data = await repo.delete(id);
+    await repo.delete(id);
 
     const result = {
       result: "SUCCESS",

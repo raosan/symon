@@ -58,11 +58,13 @@ const mockUpdate = jest.fn();
 const mockDeleteByID = jest.fn();
 
 Repository.prototype.findMany = mockfindMany.mockImplementation(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async (args?: any): Promise<probe[]> => {
     return probes.filter(probe => probe.projectID === args?.where?.projectID);
   },
 );
 Repository.prototype.count = mockCount.mockImplementation(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async (args?: { where: any }): Promise<number> => {
     const total = probes.filter(
       probe =>
@@ -147,7 +149,7 @@ describe("Probe Service", () => {
     it("should return http status code 422", async done => {
       // arrange
       mockfindMany.mockImplementationOnce(
-        async (_?: any): Promise<probe[]> => {
+        async (): Promise<probe[]> => {
           throw new Error("query error");
         },
       );
@@ -180,7 +182,7 @@ describe("Probe Service", () => {
   it("should return http status code 422", async done => {
     // arrange
     mockfindMany.mockImplementationOnce(
-      async (_?: any): Promise<probe[]> => {
+      async (): Promise<probe[]> => {
         throw new Error("query error");
       },
     );
@@ -347,6 +349,7 @@ describe("Probe Service", () => {
     it("should return http status code 422", async done => {
       // arrange
       const probeID = 1;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockUpdate.mockImplementationOnce(async (data: any) => {
         throw new Error(`query error id: ${data?.id}`);
       });
@@ -447,6 +450,7 @@ describe("Probe Service", () => {
     it("should return http status code 422", async done => {
       // arrange
       const probeID = 2;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockUpdate.mockImplementationOnce(async (data: any) => {
         throw new Error(`query error id: ${data?.id}`);
       });
@@ -491,6 +495,7 @@ describe("Probe Service", () => {
     it("should return http status code 422", async done => {
       // arrange
       const probeID = 2;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockUpdate.mockImplementationOnce(async (data: any) => {
         throw new Error(`query error id: ${data?.id}`);
       });
@@ -542,6 +547,7 @@ describe("Probe Service", () => {
       // arrange
       const probeID = 2;
       const cron = "*/10 * * * *";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockUpdate.mockImplementationOnce(async (data: any) => {
         throw new Error(`query error id: ${data?.id}`);
       });

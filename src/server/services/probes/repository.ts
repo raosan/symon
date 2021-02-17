@@ -26,14 +26,15 @@ export class Repository {
   async findMany(args?: {
     skip?: number;
     take?: number;
-    orderBy?: any;
-    where?: any;
+    orderBy?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    where?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }): Promise<probe[]> {
     const data = await prisma.probe.findMany(args);
 
     return data;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async count(args?: { where: any }): Promise<number> {
     const total = await prisma.probe.count(args);
 

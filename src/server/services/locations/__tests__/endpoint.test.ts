@@ -41,10 +41,7 @@ let locations: Location[] = [
   },
 ];
 
-LocationRepository.prototype.findMany = async (
-  offset: number,
-  size: number,
-) => {
+LocationRepository.prototype.findMany = async () => {
   return locations;
 };
 
