@@ -19,7 +19,7 @@ FROM node:lts
 WORKDIR /usr/app/symon
 
 # Copy files needed
-
+COPY .env.example .env
 COPY package-lock.json .
 COPY package.json .
 COPY tsconfig.json .
@@ -28,7 +28,6 @@ COPY tsconfig.json .
 RUN mkdir src
 COPY src/config src/config
 COPY src/server src/server
-COPY src/utils src/utils
 
 # Clean install dependencies
 RUN npm ci

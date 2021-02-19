@@ -20,6 +20,7 @@ WORKDIR /usr/app/symon
 
 # Stage 1: Build
 # Copy files needed
+COPY .env.example .env
 COPY package-lock.json .
 COPY package.json .
 COPY postcss.config.js .

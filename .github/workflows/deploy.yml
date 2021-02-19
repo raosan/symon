@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm ci
+      - name: Generate Prisma Schema
+        run: npx prisma generate --schema src/server/prisma/schema.prisma
+      - name: Run static analysis
+        run: npm run static-analysis
+      - name: Run dynamic analysis
+        run: npm run dynamic-analysis
+      - name: Build Client Image with Docker
+        run: docker build -f Dockerfile.client . -t dokku/frontend:$(git rev-parse --short HEAD)
+      - name: Build Server Image with Docker
+        run: docker build -f Dockerfile.server . -t dokku/api:$(git rev-parse --short HEAD)
+      - name: "Create SSH Folder"
+        run: mkdir -p ~/.ssh/
+      - name: "Create SSH Public Key from Azure Pipelines Variables"
+        run: echo -e ${{ secrets.KAKSYMON_PUB_KEY }} > ~/.ssh/id_rsa.pub && chmod 600 ~/.ssh/id_rsa.pub
+      - name: "Create SSH Private Key from Azure Pipelines Variables"
+        run: echo -e ${{ secrets.KAKSYMON_PRIV_KEY }} > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+      - name: "Add SSH Fingerprint"
+        run: ssh-keyscan ${{ secrets.KAKSYMON_IP_ADDRESS }} >> ~/.ssh/known_hosts
+      - name: Upload the Client Image to Staging
+        run: docker save dokku/frontend:$(git rev-parse --short HEAD) | bzip2 | ssh ${{ secrets.KAKSYMON_USER }}@${{ secrets.KAKSYMON_IP_ADDRESS }} "bunzip2 | docker load"
+      - name: Upload the Server Image to Staging
+        run: docker save dokku/api:$(git rev-parse --short HEAD) | bzip2 | ssh ${{ secrets.KAKSYMON_USER }}@${{ secrets.KAKSYMON_IP_ADDRESS }} "bunzip2 | docker load"
+      - name: Begin deployment of Client
+        run: ssh ${{ secrets.KAKSYMON_USER }}@${{ secrets.KAKSYMON_IP_ADDRESS }} "dokku tags:create frontend previous; dokku tags:deploy frontend $(git rev-parse --short HEAD)"
+      - name: Begin deployment of Server
+        run: ssh ${{ secrets.KAKSYMON_USER }}@${{ secrets.KAKSYMON_IP_ADDRESS }} "dokku tags:create api previous; dokku tags:deploy api $(git rev-parse --short HEAD)"
