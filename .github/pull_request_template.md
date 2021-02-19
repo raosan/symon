@@ -1,11 +1,5 @@
 # Symon Pull Request (PR)
 
-## PR type
-
-- [ ] feature
-- [ ] bugfix
-- [ ] others (explain):
-
 ### what issue does this pr address
 
 1. implementing issue no #xxxx which adds feature yyyy

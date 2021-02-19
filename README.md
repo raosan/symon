@@ -17,20 +17,24 @@ After cloning this repo, install the dependencies:
 npm install
 ```
 
+then install [npx](https://www.npmjs.com/package/npx):
+```
+npm i -g npx
+```
+
 Copy the environment variables configuration:
 ```
 cp .env.example .env
 ```
 
 Run database (Prisma) migration:
-
-```bash
+```
 npx prisma generate
 npx prisma migrate dev --preview-feature
 ```
 
 Run database (Prisma) seed:
-```bash
+```
 npm run seed
 ```
 
