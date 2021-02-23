@@ -17,23 +17,26 @@
  *                                                                                *
  **********************************************************************************/
 
-import { FC } from "react";
-import Logo from "../Logo";
+import { Story, Meta } from "@storybook/react/types-6-0";
+import { BrowserRouter as Router } from "react-router-dom";
 
-export interface HeaderProps {
-  right?: React.ReactNode;
-}
+import { SidebarView, SidebarViewProps } from "./Sidebar";
 
-/**
- * Header component
- */
-export const Header: FC<HeaderProps> = ({ right }) => {
-  return (
-    <div className="h-20 px-7 bg-bw-dark flex justify-between items-center">
-      <div className="w-36">
-        <Logo />
-      </div>
-      <div>{right}</div>
-    </div>
-  );
+export default {
+  title: "Sidebar",
+  component: SidebarView,
+} as Meta;
+
+const Template: Story<SidebarViewProps> = args => (
+  <Router>
+    <SidebarView {...args} />
+  </Router>
+);
+
+export const Default = Template.bind({});
+Default.args = {
+  orgName: "hyperjump",
+  user: {
+    fullName: "Nico Prananta",
+  },
 };

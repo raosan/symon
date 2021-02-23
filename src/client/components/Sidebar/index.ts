@@ -17,23 +17,4 @@
  *                                                                                *
  **********************************************************************************/
 
-import { FC } from "react";
-import Logo from "../Logo";
-
-export interface HeaderProps {
-  right?: React.ReactNode;
-}
-
-/**
- * Header component
- */
-export const Header: FC<HeaderProps> = ({ right }) => {
-  return (
-    <div className="h-20 px-7 bg-bw-dark flex justify-between items-center">
-      <div className="w-36">
-        <Logo />
-      </div>
-      <div>{right}</div>
-    </div>
-  );
-};
+export { Sidebar as default } from "./Sidebar";
