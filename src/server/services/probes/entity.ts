@@ -17,6 +17,14 @@
  *                                                                                *
  **********************************************************************************/
 
+export interface Probe {
+  id: number;
+  probeName?: string;
+  status?: string;
+  runMode?: string;
+  cron?: string;
+}
+
 export interface ProbeCreate {
   projectID: number;
   probeName: string;

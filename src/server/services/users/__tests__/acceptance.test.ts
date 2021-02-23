@@ -30,8 +30,6 @@ import { User, UserCreate, UserUpdate } from "../entity";
 import user from "../index";
 import { UserRepository } from "../repository";
 
-jest.mock("../repository");
-
 let users: User[] = [
   {
     id: 1,
@@ -50,56 +48,60 @@ let users: User[] = [
   },
 ];
 
-UserRepository.prototype.findMany = async () => {
-  return users;
-};
-
-UserRepository.prototype.findOneByID = async (id: number) => {
-  return users.find(user => user.id === id) || null;
-};
-
-UserRepository.prototype.findOneByEmail = async (email: string) => {
-  return users.find(user => user.email === email) || null;
-};
-
-UserRepository.prototype.create = async (data: UserCreate) => {
-  const createdUser = { id: 2, ...data };
-  users.push({ ...createdUser, password_hash: createdUser.password });
-
-  return createdUser;
-};
-
-UserRepository.prototype.update = async (id: number, data: UserUpdate) => {
-  users = users.map(user => {
-    if (user.id === id) {
-      return { ...user, newData: data };
-    }
-
-    return user;
-  });
-
-  const updatedData = users.find(user => user.id === id);
-
-  if (!updatedData) {
-    throw new Error("User not found");
-  }
-
-  return updatedData;
-};
-
-UserRepository.prototype.destroy = async (id: number) => {
-  users = users.filter(user => user.id !== id);
-
-  return id;
-};
-
-setupPassportJwt(UserRepository.prototype);
-
 describe("User Service", () => {
   const app = express();
   app.use(bodyParser.json());
   app.use(user);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    UserRepository.prototype.findMany = async () => {
+      return users;
+    };
+
+    UserRepository.prototype.findOneByID = async (id: number) => {
+      return users.find(user => user.id === id) || null;
+    };
+
+    UserRepository.prototype.findOneByEmail = async (email: string) => {
+      return users.find(user => user.email === email) || null;
+    };
+
+    UserRepository.prototype.create = async (data: UserCreate) => {
+      const createdUser = { id: 2, ...data };
+      users.push({ ...createdUser, password_hash: createdUser.password });
+
+      return createdUser;
+    };
+
+    UserRepository.prototype.update = async (id: number, data: UserUpdate) => {
+      users = users.map(user => {
+        if (user.id === id) {
+          return { ...user, newData: data };
+        }
+
+        return user;
+      });
+
+      const updatedData = users.find(user => user.id === id);
+
+      if (!updatedData) {
+        throw new Error("User not found");
+      }
+
+      return updatedData;
+    };
+
+    UserRepository.prototype.destroy = async (id: number) => {
+      users = users.filter(user => user.id !== id);
+
+      return id;
+    };
+
+    setupPassportJwt(UserRepository.prototype);
+  });
 
   describe("GET /v1/users", () => {
     it("should return http status code 200", async done => {

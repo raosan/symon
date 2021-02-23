@@ -17,64 +17,11 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Probe, ProbeCreate, ProbeUpdate } from "./entity";
+import { PrismaClient } from "@prisma/client";
 
-import Prisma from "../../prisma/prisma-client";
+const Prisma = new PrismaClient({
+  log: ["query", "info", `warn`, `error`],
+  errorFormat: "pretty",
+});
 
-export class Repository {
-  async findMany(args?: {
-    skip?: number;
-    take?: number;
-    orderBy?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    where?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  }): Promise<Probe[]> {
-    const data = await Prisma.probe.findMany(args);
-
-    return data;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async count(args?: { where: any }): Promise<number> {
-    const total = await Prisma.probe.count(args);
-
-    return total;
-  }
-
-  async findById(id: number): Promise<Probe | null> {
-    const result = await Prisma.probe.findUnique({
-      where: { id },
-    });
-
-    return result;
-  }
-
-  async create(data: ProbeCreate): Promise<Probe> {
-    const result = await Prisma.probe.create({
-      data: {
-        projectID: data.projectID,
-        probeName: data.probeName,
-        status: data.status,
-        runMode: data.runMode,
-        cron: data.cron,
-      },
-    });
-
-    return result;
-  }
-
-  async update(data: ProbeUpdate): Promise<Probe> {
-    const { id, probeName } = data;
-    const result = await Prisma.probe.update({
-      where: { id },
-      data: { probeName },
-    });
-
-    return result;
-  }
-
-  async deleteByID(id: number): Promise<void> {
-    await Prisma.location.delete({
-      where: { entityId: id },
-    });
-  }
-}
+export default Prisma;

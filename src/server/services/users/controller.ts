@@ -22,6 +22,8 @@ import { NextFunction, Request, Response } from "express";
 import { AppError, commonHTTPErrors } from "../../internal/app-error";
 import { UserRepository } from "./repository";
 
+const repository = new UserRepository();
+
 export async function findMany(
   req: Request<
     null,
@@ -36,8 +38,6 @@ export async function findMany(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repository = new UserRepository();
-
   try {
     const data = await repository.findMany({
       offset: parseInt(req.query.offset ?? "0", 10),
@@ -66,8 +66,6 @@ export async function findOneByID(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repository = new UserRepository();
-
   const id = parseInt(req.params.id, 10);
 
   try {
@@ -106,8 +104,6 @@ export async function create(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repository = new UserRepository();
-
   const { email, password } = req.body;
 
   try {
@@ -139,8 +135,6 @@ export async function update(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repository = new UserRepository();
-
   const id = parseInt(req.params.id, 10);
   const { enabled, suspended } = req.body;
 
@@ -168,8 +162,6 @@ export async function destroy(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repository = new UserRepository();
-
   const id = parseInt(req.params.id, 10);
 
   try {

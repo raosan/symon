@@ -27,8 +27,6 @@ import { Project, ProjectCreate, ProjectUpdate } from "../entity";
 import project from "../index";
 import { ProjectRepository } from "../repository";
 
-jest.mock("../repository");
-
 let projects: Project[] = [
   {
     id: 1,
@@ -37,54 +35,60 @@ let projects: Project[] = [
   },
 ];
 
-ProjectRepository.prototype.findMany = async () => {
-  return projects;
-};
-
-ProjectRepository.prototype.findOneByID = async (id: number) => {
-  return projects.find(project => project.id === id) || null;
-};
-
-ProjectRepository.prototype.create = async (projectCreate: ProjectCreate) => {
-  const createdProject = { id: 2, ...projectCreate };
-  projects.push(createdProject);
-
-  return createdProject;
-};
-
-ProjectRepository.prototype.update = async (
-  id: number,
-  projectUpdate: ProjectUpdate,
-) => {
-  projects = projects.map(project => {
-    if (project.id === id) {
-      return { ...project, projectUpdate };
-    }
-
-    return project;
-  });
-
-  const updatedData = projects.find(project => project.id === id);
-
-  if (!updatedData) {
-    throw new Error("Project not found");
-  }
-
-  return updatedData;
-};
-
-ProjectRepository.prototype.destroy = async (id: number) => {
-  projects = projects.filter(project => project.id !== id);
-
-  return id;
-};
-
 describe("Project Service", () => {
   const app = express();
 
   app.use(bodyParser.json());
   app.use(project);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    ProjectRepository.prototype.findMany = async () => {
+      return projects;
+    };
+
+    ProjectRepository.prototype.findOneByID = async (id: number) => {
+      return projects.find(project => project.id === id) || null;
+    };
+
+    ProjectRepository.prototype.create = async (
+      projectCreate: ProjectCreate,
+    ) => {
+      const createdProject = { id: 2, ...projectCreate };
+      projects.push(createdProject);
+
+      return createdProject;
+    };
+
+    ProjectRepository.prototype.update = async (
+      id: number,
+      projectUpdate: ProjectUpdate,
+    ) => {
+      projects = projects.map(project => {
+        if (project.id === id) {
+          return { ...project, projectUpdate };
+        }
+
+        return project;
+      });
+
+      const updatedData = projects.find(project => project.id === id);
+
+      if (!updatedData) {
+        throw new Error("Project not found");
+      }
+
+      return updatedData;
+    };
+
+    ProjectRepository.prototype.destroy = async (id: number) => {
+      projects = projects.filter(project => project.id !== id);
+
+      return id;
+    };
+  });
 
   describe("GET /v1/projects", () => {
     it("should return http status code 200", async done => {

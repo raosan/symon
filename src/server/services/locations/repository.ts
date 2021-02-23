@@ -17,14 +17,13 @@
  *                                                                                *
  **********************************************************************************/
 
-import { PrismaClient } from "@prisma/client";
 import { Location, LocationCreate, LocationUpdate } from "./entity";
 
-const prisma = new PrismaClient();
+import Prisma from "../../prisma/prisma-client";
 
 export class LocationRepository {
   async findMany(offset: number, size: number): Promise<Location[]> {
-    const data = await prisma.location.findMany({
+    const data = await Prisma.location.findMany({
       skip: offset,
       take: size,
     });
@@ -32,7 +31,7 @@ export class LocationRepository {
   }
 
   async findById(id: number): Promise<Location | null> {
-    const data = await prisma.location.findUnique({
+    const data = await Prisma.location.findUnique({
       where: { entityId: id },
     });
 
@@ -40,7 +39,7 @@ export class LocationRepository {
   }
 
   async create(locationInput: LocationCreate): Promise<Location> {
-    const data = await prisma.location.create({
+    const data = await Prisma.location.create({
       data: locationInput,
     });
 
@@ -49,7 +48,7 @@ export class LocationRepository {
 
   async update(locationUpdate: LocationUpdate): Promise<Location> {
     const { entityId, ...newData } = locationUpdate;
-    const data = await prisma.location.update({
+    const data = await Prisma.location.update({
       where: { entityId },
       data: newData,
     });
@@ -57,7 +56,7 @@ export class LocationRepository {
   }
 
   async delete(id: number): Promise<number> {
-    await prisma.location.delete({
+    await Prisma.location.delete({
       where: { entityId: id },
     });
 

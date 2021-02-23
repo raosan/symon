@@ -31,8 +31,6 @@ import {
 import organization from "../index";
 import { OrganizationRepository } from "../repository";
 
-jest.mock("../repository");
-
 let organizations: Organization[] = [
   {
     id: 1,
@@ -41,58 +39,64 @@ let organizations: Organization[] = [
   },
 ];
 
-OrganizationRepository.prototype.findMany = async () => {
-  return organizations;
-};
-
-OrganizationRepository.prototype.findOneByID = async (id: number) => {
-  return organizations.find(organization => organization.id === id) || null;
-};
-
-OrganizationRepository.prototype.create = async (
-  userInput: OrganizationCreate,
-) => {
-  const createdUser = { id: 2, ...userInput };
-  organizations.push(createdUser);
-
-  return createdUser;
-};
-
-OrganizationRepository.prototype.update = async (
-  id: number,
-  userUpdate: OrganizationUpdate,
-) => {
-  organizations = organizations.map(organization => {
-    if (organization.id === id) {
-      return { ...organization, userUpdate };
-    }
-
-    return organization;
-  });
-
-  const updatedData = organizations.find(
-    organization => organization.id === id,
-  );
-
-  if (!updatedData) {
-    throw new Error("Organization not found");
-  }
-
-  return updatedData;
-};
-
-OrganizationRepository.prototype.destroy = async (id: number) => {
-  organizations = organizations.filter(organization => organization.id !== id);
-
-  return id;
-};
-
 describe("Organization Service", () => {
   const app = express();
 
   app.use(bodyParser.json());
   app.use(organization);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    OrganizationRepository.prototype.findMany = async () => {
+      return organizations;
+    };
+
+    OrganizationRepository.prototype.findOneByID = async (id: number) => {
+      return organizations.find(organization => organization.id === id) || null;
+    };
+
+    OrganizationRepository.prototype.create = async (
+      userInput: OrganizationCreate,
+    ) => {
+      const createdUser = { id: 2, ...userInput };
+      organizations.push(createdUser);
+
+      return createdUser;
+    };
+
+    OrganizationRepository.prototype.update = async (
+      id: number,
+      userUpdate: OrganizationUpdate,
+    ) => {
+      organizations = organizations.map(organization => {
+        if (organization.id === id) {
+          return { ...organization, userUpdate };
+        }
+
+        return organization;
+      });
+
+      const updatedData = organizations.find(
+        organization => organization.id === id,
+      );
+
+      if (!updatedData) {
+        throw new Error("Organization not found");
+      }
+
+      return updatedData;
+    };
+
+    OrganizationRepository.prototype.destroy = async (id: number) => {
+      organizations = organizations.filter(
+        organization => organization.id !== id,
+      );
+
+      return id;
+    };
+  });
 
   describe("GET /v1/organizations", () => {
     it("should return http status code 200", async done => {

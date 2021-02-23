@@ -26,8 +26,6 @@ import { Location, LocationCreate, LocationUpdate } from "../entity";
 import { LocationRepository } from "../repository";
 import location from "../index";
 
-jest.mock("../repository");
-
 let locations: Location[] = [
   {
     entityId: 1,
@@ -41,52 +39,56 @@ let locations: Location[] = [
   },
 ];
 
-LocationRepository.prototype.findMany = async () => {
-  return locations;
-};
-
-LocationRepository.prototype.findById = async (id: number) => {
-  return locations.find(locations => locations.entityId == id) || null;
-};
-
-LocationRepository.prototype.create = async (input: LocationCreate) => {
-  const createdLocation = { entityId: 2, ...input };
-  locations.push(createdLocation);
-
-  return createdLocation;
-};
-
-LocationRepository.prototype.update = async (input: LocationUpdate) => {
-  const { entityId, ...newData } = input;
-  locations = locations.map(location => {
-    if (location.entityId == entityId) {
-      return { ...location, newData };
-    }
-
-    return location;
-  });
-
-  const updatedLocation = locations.find(
-    location => location.entityId === entityId,
-  );
-  if (!updatedLocation) {
-    throw new Error("Location not found");
-  }
-
-  return updatedLocation;
-};
-
-LocationRepository.prototype.delete = async (id: number) => {
-  locations = locations.filter(location => location.entityId !== id);
-  return id;
-};
-
 describe("Location Service", () => {
   // arrange
   const app = express();
   app.use(bodyParser.json());
   app.use(location);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    LocationRepository.prototype.findMany = async () => {
+      return locations;
+    };
+
+    LocationRepository.prototype.findById = async (id: number) => {
+      return locations.find(locations => locations.entityId == id) || null;
+    };
+
+    LocationRepository.prototype.create = async (input: LocationCreate) => {
+      const createdLocation = { entityId: 2, ...input };
+      locations.push(createdLocation);
+
+      return createdLocation;
+    };
+
+    LocationRepository.prototype.update = async (input: LocationUpdate) => {
+      const { entityId, ...newData } = input;
+      locations = locations.map(location => {
+        if (location.entityId == entityId) {
+          return { ...location, newData };
+        }
+
+        return location;
+      });
+
+      const updatedLocation = locations.find(
+        location => location.entityId === entityId,
+      );
+      if (!updatedLocation) {
+        throw new Error("Location not found");
+      }
+
+      return updatedLocation;
+    };
+
+    LocationRepository.prototype.delete = async (id: number) => {
+      locations = locations.filter(location => location.entityId !== id);
+      return id;
+    };
+  });
 
   describe("GET /v1/locations", () => {
     it("should return success 200", async done => {

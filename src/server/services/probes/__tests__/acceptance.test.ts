@@ -28,8 +28,6 @@ import probeService from "../index";
 import { ProbeCreate, ProbeUpdate } from "../entity";
 import { Repository } from "../repository";
 
-jest.mock("../repository");
-
 // arrange
 let probes: probe[] = [
   {
@@ -57,79 +55,85 @@ const mockCreate = jest.fn();
 const mockUpdate = jest.fn();
 const mockDeleteByID = jest.fn();
 
-Repository.prototype.findMany = mockfindMany.mockImplementation(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (args?: any): Promise<probe[]> => {
-    return probes.filter(probe => probe.projectID === args?.where?.projectID);
-  },
-);
-Repository.prototype.count = mockCount.mockImplementation(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (args?: { where: any }): Promise<number> => {
-    const total = probes.filter(
-      probe =>
-        probe.projectID === args?.where?.projectID &&
-        probe.probeName === args?.where?.probeName,
-    );
-
-    return total.length;
-  },
-);
-Repository.prototype.findById = mockFindById.mockImplementation(
-  async (id: number): Promise<probe | null> => {
-    const result = probes.find(probe => probe.id === id);
-
-    return result || null;
-  },
-);
-Repository.prototype.create = mockCreate.mockImplementation(
-  async (data: ProbeCreate): Promise<probe> => {
-    const lastID = probes.reduce((maxID, probe) => {
-      if (probe.id > maxID) {
-        return probe.id;
-      }
-
-      return maxID;
-    }, 0);
-    const autoIncrementID = lastID + 1;
-    const createdProb = { id: autoIncrementID, ...data };
-    probes.push(createdProb);
-
-    return createdProb;
-  },
-);
-Repository.prototype.update = mockUpdate.mockImplementation(
-  async (data: ProbeUpdate): Promise<probe> => {
-    const { id } = data;
-    probes = probes.map(probe => {
-      if (probe.id === id) {
-        return { ...probe, ...data };
-      }
-
-      return probe;
-    });
-
-    const updatedData = probes.find(probe => probe.id === id);
-
-    if (!updatedData) {
-      throw new Error("Project not found");
-    }
-
-    return updatedData;
-  },
-);
-Repository.prototype.deleteByID = mockDeleteByID.mockImplementation(
-  async (id: number) => {
-    probes = probes.filter(probe => probe.id !== id);
-  },
-);
-
 describe("Probe Service", () => {
   // arrange
   const app = express();
   app.use(bodyParser.json());
   app.use(probeService);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    Repository.prototype.findMany = mockfindMany.mockImplementation(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (args?: any): Promise<probe[]> => {
+        return probes.filter(
+          probe => probe.projectID === args?.where?.projectID,
+        );
+      },
+    );
+    Repository.prototype.count = mockCount.mockImplementation(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (args?: { where: any }): Promise<number> => {
+        const total = probes.filter(
+          probe =>
+            probe.projectID === args?.where?.projectID &&
+            probe.probeName === args?.where?.probeName,
+        );
+
+        return total.length;
+      },
+    );
+    Repository.prototype.findById = mockFindById.mockImplementation(
+      async (id: number): Promise<probe | null> => {
+        const result = probes.find(probe => probe.id === id);
+
+        return result || null;
+      },
+    );
+    Repository.prototype.create = mockCreate.mockImplementation(
+      async (data: ProbeCreate): Promise<probe> => {
+        const lastID = probes.reduce((maxID, probe) => {
+          if (probe.id > maxID) {
+            return probe.id;
+          }
+
+          return maxID;
+        }, 0);
+        const autoIncrementID = lastID + 1;
+        const createdProb = { id: autoIncrementID, ...data };
+        probes.push(createdProb);
+
+        return createdProb;
+      },
+    );
+    Repository.prototype.update = mockUpdate.mockImplementation(
+      async (data: ProbeUpdate): Promise<probe> => {
+        const { id } = data;
+        probes = probes.map(probe => {
+          if (probe.id === id) {
+            return { ...probe, ...data };
+          }
+
+          return probe;
+        });
+
+        const updatedData = probes.find(probe => probe.id === id);
+
+        if (!updatedData) {
+          throw new Error("Project not found");
+        }
+
+        return updatedData;
+      },
+    );
+    Repository.prototype.deleteByID = mockDeleteByID.mockImplementation(
+      async (id: number) => {
+        probes = probes.filter(probe => probe.id !== id);
+      },
+    );
+  });
 
   describe("GET /v1/projects/:id/probes", () => {
     it("should return http status code 200", async done => {
@@ -176,22 +180,6 @@ describe("Probe Service", () => {
       probes.filter(probe => probe.projectID === projectID),
     );
 
-    done();
-  });
-
-  it("should return http status code 422", async done => {
-    // arrange
-    mockfindMany.mockImplementationOnce(
-      async (): Promise<probe[]> => {
-        throw new Error("query error");
-      },
-    );
-
-    // act
-    const res = await request(app).get("/v1/projects/1/probes");
-
-    // assert
-    expect(res.status).toBe(422);
     done();
   });
 

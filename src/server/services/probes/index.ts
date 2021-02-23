@@ -29,7 +29,7 @@ import {
   schedule,
   start,
   stop,
-} from "./handler";
+} from "./controller";
 import { createValidator, scheduleValidator } from "./validator";
 
 const router = Router();

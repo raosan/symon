@@ -21,12 +21,13 @@ import { NextFunction, Request, Response } from "express";
 import { AppError, commonHTTPErrors } from "../../internal/app-error";
 import { Repository } from "./repository";
 
+const repo = new Repository();
+
 export async function index(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { params, query } = req;
   const skip = parseInt((query.offset as string) ?? "0", 10);
   const take = parseInt((query.size as string) ?? "10", 10);
@@ -65,7 +66,6 @@ export async function show(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const id = parseInt(req.params.id, 10);
 
   try {
@@ -103,7 +103,6 @@ export async function create(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { body, params } = req;
   const { probeName } = body;
   const id = parseInt(params.id, 10);
@@ -159,7 +158,6 @@ export async function update(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { body, params } = req;
   const id = parseInt(params.id, 10);
   const { probeName } = body;
@@ -222,7 +220,6 @@ export async function destroy(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const id = parseInt(req.params.id, 10);
 
   try {
@@ -261,7 +258,6 @@ export async function start(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { params } = req;
   const id = parseInt(params.id, 10);
 
@@ -302,7 +298,6 @@ export async function stop(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { params } = req;
   const id = parseInt(params.id, 10);
 
@@ -343,7 +338,6 @@ export async function schedule(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new Repository();
   const { body, params } = req;
   const id = parseInt(params.id, 10);
   const { cron } = body;

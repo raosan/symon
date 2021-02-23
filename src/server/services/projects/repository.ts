@@ -17,10 +17,9 @@
  *                                                                                *
  **********************************************************************************/
 
-import { PrismaClient } from "@prisma/client";
 import { Project, ProjectCreate, ProjectUpdate } from "./entity";
 
-const prisma = new PrismaClient();
+import Prisma from "../../prisma/prisma-client";
 
 export class ProjectRepository {
   async findMany({
@@ -32,7 +31,7 @@ export class ProjectRepository {
     size: number;
     order: "asc" | "desc";
   }): Promise<Project[]> {
-    const data = await prisma.project.findMany({
+    const data = await Prisma.project.findMany({
       skip: offset,
       take: size,
       orderBy: {
@@ -44,7 +43,7 @@ export class ProjectRepository {
   }
 
   async findOneByID(id: number): Promise<Project | null> {
-    const data = await prisma.project.findUnique({
+    const data = await Prisma.project.findUnique({
       where: {
         id,
       },
@@ -54,7 +53,7 @@ export class ProjectRepository {
   }
 
   async create(res: ProjectCreate): Promise<Project> {
-    const data = await prisma.project.create({
+    const data = await Prisma.project.create({
       data: res,
     });
 
@@ -62,7 +61,7 @@ export class ProjectRepository {
   }
 
   async update(id: number, res: ProjectUpdate): Promise<Project> {
-    const data = await prisma.project.update({
+    const data = await Prisma.project.update({
       where: { id },
       data: res,
     });
@@ -71,7 +70,7 @@ export class ProjectRepository {
   }
 
   async destroy(id: number): Promise<number> {
-    await prisma.project.delete({ where: { id } });
+    await Prisma.project.delete({ where: { id } });
 
     return id;
   }

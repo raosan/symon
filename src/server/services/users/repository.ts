@@ -18,12 +18,9 @@
  **********************************************************************************/
 
 import argon2 from "argon2";
-
-import { PrismaClient } from "@prisma/client";
-
 import { User, UserCreate, UserUpdate } from "./entity";
 
-const prisma = new PrismaClient();
+import Prisma from "../../prisma/prisma-client";
 
 type UserResponse = Omit<User, "password_hash">;
 
@@ -45,7 +42,7 @@ export class UserRepository {
     size: number;
     order: "asc" | "desc";
   }): Promise<UserResponse[]> {
-    const data = await prisma.user.findMany({
+    const data = await Prisma.user.findMany({
       select: this.selectedFields,
       skip: offset,
       take: size,
@@ -58,7 +55,7 @@ export class UserRepository {
   }
 
   async findOneByID(id: number): Promise<UserResponse | null> {
-    const data = await prisma.user.findUnique({
+    const data = await Prisma.user.findUnique({
       select: this.selectedFields,
       where: { id },
     });
@@ -67,7 +64,7 @@ export class UserRepository {
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    const data = await prisma.user.findUnique({
+    const data = await Prisma.user.findUnique({
       where: { email },
     });
 
@@ -77,7 +74,7 @@ export class UserRepository {
   async create({ password, ...res }: UserCreate): Promise<UserResponse> {
     const passwordHashed = await this.generatePasswordHash(password);
 
-    const data = await prisma.user.create({
+    const data = await Prisma.user.create({
       select: this.selectedFields,
       data: {
         ...res,
@@ -89,7 +86,7 @@ export class UserRepository {
   }
 
   async update(id: number, res: UserUpdate): Promise<UserResponse> {
-    const data = await prisma.user.update({
+    const data = await Prisma.user.update({
       select: this.selectedFields,
       where: { id },
       data: res,
@@ -99,7 +96,7 @@ export class UserRepository {
   }
 
   async destroy(id: number): Promise<number> {
-    await prisma.user.delete({ where: { id } });
+    await Prisma.user.delete({ where: { id } });
 
     return id;
   }

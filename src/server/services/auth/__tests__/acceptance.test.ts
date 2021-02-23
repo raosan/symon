@@ -30,8 +30,6 @@ import { UserRepository } from "../../users/repository";
 import auth from "../index";
 import { cfg } from "../../../../config/index";
 
-jest.mock("../../users/repository");
-
 const users: User[] = [
   {
     id: 1,
@@ -58,12 +56,6 @@ const users: User[] = [
     suspended: 1,
   },
 ];
-
-UserRepository.prototype.findOneByEmail = async (email: string) => {
-  return users.find(user => user.email === email) || null;
-};
-
-setupPassport(UserRepository.prototype);
 
 export function generateMockJWT(
   type: "ACCESS" | "REFRESH",
@@ -98,6 +90,16 @@ describe("Auth Service", () => {
   app.use(bodyParser.json());
   app.use(auth);
   app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../../users/repository");
+
+    UserRepository.prototype.findOneByEmail = async (email: string) => {
+      return users.find(user => user.email === email) || null;
+    };
+
+    setupPassport(UserRepository.prototype);
+  });
 
   describe("POST /v1/auth", () => {
     it("should return http status code 200", async done => {

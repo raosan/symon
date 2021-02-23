@@ -17,10 +17,9 @@
  *                                                                                *
  **********************************************************************************/
 
-import { PrismaClient } from "@prisma/client";
 import { Organization, OrganizationCreate, OrganizationUpdate } from "./entity";
 
-const prisma = new PrismaClient();
+import Prisma from "../../prisma/prisma-client";
 
 export class OrganizationRepository {
   async findMany({
@@ -32,7 +31,7 @@ export class OrganizationRepository {
     size: number;
     order: "asc" | "desc";
   }): Promise<Organization[]> {
-    const data = await prisma.organization.findMany({
+    const data = await Prisma.organization.findMany({
       skip: offset,
       take: size,
       orderBy: {
@@ -44,7 +43,7 @@ export class OrganizationRepository {
   }
 
   async findOneByID(id: number): Promise<Organization | null> {
-    const data = await prisma.organization.findUnique({
+    const data = await Prisma.organization.findUnique({
       where: {
         id,
       },
@@ -54,7 +53,7 @@ export class OrganizationRepository {
   }
 
   async create(res: OrganizationCreate): Promise<Organization> {
-    const data = await prisma.organization.create({
+    const data = await Prisma.organization.create({
       data: res,
     });
 
@@ -62,7 +61,7 @@ export class OrganizationRepository {
   }
 
   async update(id: number, res: OrganizationUpdate): Promise<Organization> {
-    const data = await prisma.organization.update({
+    const data = await Prisma.organization.update({
       where: { id },
       data: res,
     });
@@ -71,7 +70,7 @@ export class OrganizationRepository {
   }
 
   async destroy(id: number): Promise<number> {
-    await prisma.organization.delete({ where: { id } });
+    await Prisma.organization.delete({ where: { id } });
 
     return id;
   }

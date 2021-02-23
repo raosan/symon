@@ -145,3 +145,6 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+# Prisma - SQLite file datastorage
+**/*dev.db

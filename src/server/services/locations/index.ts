@@ -24,7 +24,7 @@ import {
   findSchemaValidator,
   updateSchemaValidator,
 } from "./schema";
-import { create, destroy, findById, findMany, update } from "./handler";
+import { create, destroy, findById, findMany, update } from "./controller";
 
 const router = express.Router();
 

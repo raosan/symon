@@ -21,12 +21,13 @@ import { Request, Response, NextFunction } from "express";
 import { AppError, commonHTTPErrors } from "../../internal/app-error";
 import { LocationRepository } from "./repository";
 
+const repo = new LocationRepository();
+
 export async function findMany(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new LocationRepository();
   const os = typeof req.query.offset === "string" ? req.query.offset : "0";
   const sz = typeof req.query.size === "string" ? req.query.size : "0";
   const offset: number = parseInt(os, 10);
@@ -55,8 +56,6 @@ export async function findById(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new LocationRepository();
-
   const id = parseInt(req.params.id, 10);
 
   try {
@@ -96,7 +95,6 @@ export async function create(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new LocationRepository();
   const { locationName, countryCode, dataCenter } = req.body;
   const timeNow = Math.floor(Date.now() / 1000);
 
@@ -133,7 +131,6 @@ export async function update(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new LocationRepository();
   const id = parseInt(req.params.id, 10);
   const { locationName, countryCode, dataCenter } = req.body;
   const timeNow = Math.floor(Date.now() / 1000);
@@ -170,7 +167,6 @@ export async function destroy(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const repo = new LocationRepository();
   const id = parseInt(req.params.id, 10);
 
   try {
