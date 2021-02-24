@@ -42,7 +42,7 @@ let users: User[] = [
     id: 6,
     email: "foo@bar.com",
     password_hash:
-      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+      "$argon2d$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$vMacEP0ocxrbJBctoJAdg+hYD8DrnAnR5d4x4YL3RHU", //hashed password from: right password
     enabled: 1,
     suspended: 0,
   },

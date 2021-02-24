@@ -35,7 +35,7 @@ const users: User[] = [
     id: 1,
     email: "foo@bar.com",
     password_hash:
-      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+      "$argon2d$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$vMacEP0ocxrbJBctoJAdg+hYD8DrnAnR5d4x4YL3RHU", //hashed password from: right password
     enabled: 1,
     suspended: 0,
   },
@@ -43,7 +43,7 @@ const users: User[] = [
     id: 2,
     email: "disabled@bar.com",
     password_hash:
-      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+      "$argon2d$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$vMacEP0ocxrbJBctoJAdg+hYD8DrnAnR5d4x4YL3RHU", //hashed password from: right password
     enabled: 0,
     suspended: 0,
   },
@@ -51,7 +51,7 @@ const users: User[] = [
     id: 3,
     email: "suspended@test.com",
     password_hash:
-      "$2b$10$mWyxxy0l3SAKl08g6K0W9u0gBzrEDQ757Fgn/gY727t.BYYIvCAhK", //hashed password from: right password
+      "$argon2d$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$vMacEP0ocxrbJBctoJAdg+hYD8DrnAnR5d4x4YL3RHU", //hashed password from: right password
     enabled: 1,
     suspended: 1,
   },
@@ -103,8 +103,6 @@ describe("Auth Service", () => {
 
   describe("POST /v1/auth", () => {
     it("should return http status code 200", async done => {
-      jest.spyOn(argon2, "verify").mockResolvedValue(true);
-
       // act
       const res = await request(app).post("/v1/auth").send({
         email: "foo@bar.com",
@@ -129,8 +127,6 @@ describe("Auth Service", () => {
     });
 
     it("should return http status code 401 wrong password", async done => {
-      jest.spyOn(argon2, "verify").mockResolvedValue(false);
-
       // act
       const res = await request(app).post("/v1/auth").send({
         email: "foo@bar.com",
