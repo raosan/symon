@@ -17,7 +17,6 @@
  *                                                                                *
  **********************************************************************************/
 
-import argon2 from "argon2";
 import bodyParser from "body-parser";
 import express from "express";
 import jwt from "jsonwebtoken";
