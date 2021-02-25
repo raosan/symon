@@ -4,22 +4,31 @@
 
 Synthetic Monitoring by Hyperjump
 
+## Content
+
+- [Installation](#Installation)
+- [Development](#Development)
+- [Storybook](#Storybook)
+- [Integration test](#integration-test)
+- [Building for production](#Building-for-production)
+  - [Client](#Client)
+  - [Server](#Server)
+- [Install the dependencies](#Install-the-dependencies)
+
+
 ## Installation
 
 Symon requires the following dependencies:
 
-* Node.js >= 14
+* [Node.js](https://nodejs.org/) >= 14
+* [Npm](https://www.npmjs.com/) >=6.14
+
 
 ## Development
 
 After cloning this repo, install the dependencies:
 ```
 npm install
-```
-
-then install [npx](https://www.npmjs.com/package/npx):
-```
-npm i -g npx
 ```
 
 Copy the environment variables configuration:
@@ -60,6 +69,7 @@ To start Storybook locally:
 npm run storybook
 ```
 
+
 ## Integration test
 
 To run integration test locally, first open cypress:
@@ -80,3 +90,11 @@ run `npm run client:build`. The client bundle will be available in `./dist` dire
 ### Server
 
 run `npm run server:build`.
+
+
+## Install the dependencies
+
+In case you don't have [npx](https://www.npmjs.com/package/npx):
+```
+npm i -g npx
+```
