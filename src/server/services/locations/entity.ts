@@ -28,5 +28,15 @@ export interface Location {
   updatedBy: string;
 }
 
+export interface SearchParams {
+  offset: string;
+  size: string;
+  name: string;
+  country: string;
+  dataCenter: string;
+  sort: string;
+  order: string;
+}
+
 export type LocationCreate = Omit<Location, "entityId">;
 export type LocationUpdate = Omit<Location, "createdAt" | "createdBy">;

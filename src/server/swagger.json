@@ -1730,7 +1730,7 @@
           {
             "in": "query",
             "required": false,
-            "name": "datacenter",
+            "name": "dataCenter",
             "description": "Datacenter name contains a string",
             "type": "string"
           },
@@ -1740,7 +1740,7 @@
             "name": "sort",
             "description": "Sort order of location name",
             "type": "string",
-            "enum": ["NAME", "COUNTRY", "DATACENTER"]
+            "enum": ["LOCATIONNAME", "COUNTRYCODE", "DATACENTER"]
           },
           {
             "in": "query",

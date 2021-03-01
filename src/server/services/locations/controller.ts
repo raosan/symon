@@ -19,6 +19,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { SearchParams } from "./entity";
 import { LocationRepository } from "./repository";
 
 const repo = new LocationRepository();
@@ -28,12 +29,18 @@ export async function findMany(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const os = typeof req.query.offset === "string" ? req.query.offset : "0";
-  const sz = typeof req.query.size === "string" ? req.query.size : "0";
-  const offset: number = parseInt(os, 10);
-  const size: number = parseInt(sz, 10);
+  const params: SearchParams = {
+    offset: req.query.offset as string,
+    size: req.query.size as string,
+    name: req.query.name as string,
+    country: req.query.countryCode as string,
+    dataCenter: req.query.dataCenter as string,
+    sort: req.query.sort as string,
+    order: req.query.order as string,
+  };
+
   try {
-    const data = await repo.findMany(offset, size);
+    const data = await repo.findMany(params);
     const result = {
       result: "SUCCESS",
       message: "successfully fetch locations",

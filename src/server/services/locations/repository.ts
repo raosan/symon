@@ -17,16 +17,36 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Location, LocationCreate, LocationUpdate } from "./entity";
+import {
+  Location,
+  LocationCreate,
+  LocationUpdate,
+  SearchParams,
+} from "./entity";
 
 import Prisma from "../../prisma/prisma-client";
 
 export class LocationRepository {
-  async findMany(offset: number, size: number): Promise<Location[]> {
+  async findMany(params: SearchParams): Promise<Location[]> {
+    const size = parseInt(params.size, 10);
+    const offset = parseInt(params.offset, 10);
+
     const data = await Prisma.location.findMany({
-      skip: offset,
+      where: {
+        locationName: {
+          contains: params.name,
+        },
+        countryCode: {
+          contains: params.country,
+        },
+        dataCenter: {
+          contains: params.dataCenter,
+        },
+      },
       take: size,
+      skip: offset,
     });
+
     return data;
   }
 
