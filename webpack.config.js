@@ -18,16 +18,36 @@
  **********************************************************************************/
 
 /* eslint-disable @typescript-eslint/no-var-requires */
+const fs = require("fs");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserJSPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
-const mode = process.env.NODE_ENV || "development";
-const isEnvProduction = mode === "production";
+const NODE_ENV = process.env.NODE_ENV || "development";
+const isEnvDevelopment = NODE_ENV === "development";
+const isEnvProduction = NODE_ENV === "production";
+
+const dotenvFiles = [
+  `.env.${NODE_ENV}.local`,
+  NODE_ENV !== "test" && `.env.local`,
+  `.env.${NODE_ENV}`,
+  ".env",
+].filter(Boolean);
+
+dotenvFiles.forEach(dotenvFile => {
+  if (fs.existsSync(dotenvFile)) {
+    require("dotenv").config({
+      path: dotenvFile,
+    });
+  }
+});
+
+const env = getClientEnvironment();
 
 module.exports = {
-  mode: mode,
+  mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
   devtool: isEnvProduction ? "source-map" : "inline-source-map",
   entry: "./src/client/index.tsx",
   output: {
@@ -45,6 +65,10 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
+    fallback: {
+      fs: false,
+      path: false,
+    },
   },
   module: {
     rules: [
@@ -67,6 +91,7 @@ module.exports = {
       filename: "static/css/[name].[contenthash:8].css",
       chunkFilename: "static/css/[name].[contenthash:8].chunk.css",
     }),
+    new webpack.DefinePlugin(env.stringified),
   ],
   devServer: {
     port: 4000,
@@ -82,3 +107,28 @@ module.exports = {
     },
   },
 };
+
+// https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/config/env.js
+
+function getClientEnvironment() {
+  const raw = Object.keys(process.env)
+    .filter(key => /^REACT_APP_/i.test(key))
+    .reduce(
+      (env, key) => {
+        env[key] = process.env[key];
+        return env;
+      },
+      {
+        NODE_ENV,
+        PUBLIC_URL: "/",
+      },
+    );
+  const stringified = {
+    "process.env": Object.keys(raw).reduce((env, key) => {
+      env[key] = JSON.stringify(raw[key]);
+      return env;
+    }, {}),
+  };
+
+  return { raw, stringified };
+}

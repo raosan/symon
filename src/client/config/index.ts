@@ -17,45 +17,14 @@
  *                                                                                *
  **********************************************************************************/
 
-import { cfg } from "../config";
-import { getSavedTokens } from "./user";
+interface Config {
+  env: string;
+  apiUrl: string;
+  apiPrefix: string;
+}
 
-const apiURL = cfg.apiUrl;
-const apiPrefix = cfg.apiPrefix;
-const baseURL = apiURL + apiPrefix;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetcher = async <T = any>(
-  path: string,
-  option: {
-    body: unknown;
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  },
-): Promise<T> => {
-  const { body, method } = option;
-  const { accessToken } = getSavedTokens();
-
-  const response = await fetch(`${baseURL}${path}`, {
-    method: method,
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: body ? JSON.stringify(body) : null,
-  });
-
-  const jsonResponse = await response.json();
-
-  if (!response.ok) {
-    throw new Error(jsonResponse.message);
-  }
-
-  return jsonResponse;
+export const cfg: Config = {
+  env: process.env.NODE_ENV || "development",
+  apiUrl: process.env.REACT_APP_API_URL || "http://localhost:8080",
+  apiPrefix: process.env.REACT_APP_API_PREFIX || "/v1",
 };
-
-export const post = <T>(
-  path: string,
-  option: {
-    body: unknown;
-  },
-): Promise<T> => fetcher<T>(path, { ...option, method: "POST" });
