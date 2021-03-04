@@ -13,6 +13,9 @@
   "basePath": "/v1",
   "tags": [
     {
+      "name": "SymonConfig"
+    },
+    {
       "name": "User Authentication"
     },
     {
@@ -37,11 +40,248 @@
       "name": "ProbeTasks Management"
     },
     {
-      "name": "Agent API"
+      "name": "WorkerSite Management"
+    },
+    {
+      "name": "Probe Metric"
     }
   ],
   "schemes": ["http", "https"],
   "paths": {
+    "/config/setup/status": {
+      "get": {
+        "tags": ["SymonConfig"],
+        "summary": "Get system setup status.",
+        "description": "TBD",
+        "operationId": "GetSetupStatus",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SetupStatus"
+            }
+          }
+        }
+      }
+    },
+    "/config/setup/commit": {
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Commit the setup configuration and finishes the setup phase",
+        "description": "TBD",
+        "operationId": "CommitSetupConfig",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/config/db": {
+      "get": {
+        "tags": ["SymonConfig"],
+        "summary": "Get database configuration",
+        "description": "TBD",
+        "operationId": "GetDBConfig",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DatabaseConfig"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Set database configuration",
+        "description": "TBD",
+        "operationId": "SetDBConfig",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "dbconfig",
+            "description": "Database Configuration",
+            "schema": {
+              "$ref": "#/definitions/DatabaseConfig"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration saved"
+          }
+        }
+      }
+    },
+    "/config/mail": {
+      "get": {
+        "tags": ["SymonConfig"],
+        "summary": "Get email sending configuration",
+        "description": "TBD",
+        "operationId": "GetMailConfig",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MailConfig"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Set email sending configuration",
+        "description": "TBD",
+        "operationId": "SetMailConfig",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "mailconfig",
+            "description": "Mail Server Configuration",
+            "schema": {
+              "$ref": "#/definitions/MailConfig"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          }
+        }
+      }
+    },
+    "/config/testDBConnect": {
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Test database connection as saved",
+        "description": "TBD",
+        "operationId": "TestDBConnect",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "500": {
+            "description": "Fail"
+          }
+        }
+      }
+    },
+    "/config/dropAllTables": {
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Drop all tables on the specified schema",
+        "description": "TBD",
+        "operationId": "dropAllTable",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All table dropped successful"
+          },
+          "500": {
+            "description": "Fail"
+          }
+        }
+      }
+    },
+    "/config/createAllTables": {
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Create all table on the specified schema",
+        "description": "TBD",
+        "operationId": "createAllTables",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All table created successful"
+          },
+          "500": {
+            "description": "Fail"
+          }
+        }
+      }
+    },
+    "/config/insertSeeds": {
+      "put": {
+        "tags": ["SymonConfig"],
+        "summary": "Insert all seed data",
+        "description": "TBD",
+        "operationId": "insertAllSeeds",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All seed inserted successful"
+          },
+          "500": {
+            "description": "Fail"
+          }
+        }
+      }
+    },
     "/auth": {
       "post": {
         "tags": ["User Authentication"],
@@ -1783,9 +2023,7 @@
             "description": "Not authorized"
           }
         }
-      }
-    },
-    "/location": {
+      },
       "post": {
         "tags": ["Location Management"],
         "summary": "To create new location",
@@ -1991,6 +2229,856 @@
           }
         }
       }
+    },
+    "/probes/{probeEntityID}/tasks": {
+      "get": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "List all probe task under a probe",
+        "description": "TBD",
+        "operationId": "ListProbeTasks",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProbeTaskDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Create new probe task",
+        "description": "TBD",
+        "operationId": "CreateProbeTask",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "probeEntityID",
+            "description": "the probe entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "ProbeTaskDefinition",
+            "schema": {
+              "$ref": "#/definitions/ProbeTask"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProbeTaskDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTasks/{taskEntityID}": {
+      "get": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Create new probe task",
+        "description": "TBD",
+        "operationId": "GetProbeTask",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProbeTaskDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Create new probe task",
+        "description": "TBD",
+        "operationId": "UpdateProbeTask",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "ProbeTaskDefinition",
+            "schema": {
+              "$ref": "#/definitions/ProbeTask"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ProbeTaskDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Create new probe task",
+        "description": "TBD",
+        "operationId": "DeleteProbeTask",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTasks/{taskEntityID}/locations": {
+      "get": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Get all location where this probe task need to be executed",
+        "description": "TBD",
+        "operationId": "ListProbeTaskLocations",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/LocationRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Get all location where this probe task need to be executed",
+        "description": "TBD",
+        "operationId": "AddProbeTaskLocations",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "name": "Location ID",
+            "description": "Location information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "locationEntityID": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/LocationRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTasks/{taskEntityID}/locations/{locationEntityID}": {
+      "delete": {
+        "tags": ["ProbeTasks Management"],
+        "summary": "Delete speciffic location of this probe",
+        "description": "TBD",
+        "operationId": "DeleteProbeTaskLocations",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "locationEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTask/{taskEntityID}/minuteMetric": {
+      "get": {
+        "tags": ["Probe Metric"],
+        "summary": "List minute by minute metric",
+        "description": "TBD",
+        "operationId": "MinuteMetric",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "count",
+            "description": "number of record to return",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Metric"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTask/{taskEntityID}/hourMetric": {
+      "get": {
+        "tags": ["Probe Metric"],
+        "summary": "List hour by hour metric",
+        "description": "TBD",
+        "operationId": "HourMetric",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "count",
+            "description": "number of record to return",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Metric"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTask/{taskEntityID}/dayMatric": {
+      "get": {
+        "tags": ["Probe Metric"],
+        "summary": "List day by day metric",
+        "description": "TBD",
+        "operationId": "DayMetric",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "count",
+            "description": "number of record to return",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Metric"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/probeTask/{taskEntityID}/weekMetric": {
+      "get": {
+        "tags": ["Probe Metric"],
+        "summary": "List week by week metric",
+        "description": "TBD",
+        "operationId": "WeekMetric",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "taskEntityID",
+            "description": "the probe task entityID",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": true,
+            "name": "count",
+            "description": "number of record to return",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Metric"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/workerSites": {
+      "get": {
+        "tags": ["WorkerSite Management"],
+        "summary": "List Workersites",
+        "description": "TBD",
+        "operationId": "ListWorkerSites",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/WorkerSiteDetil"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["WorkerSite Management"],
+        "summary": "Create Workersites",
+        "description": "TBD",
+        "operationId": "CreateWorkerSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "name": "Worker Site",
+            "description": "the workers site to add",
+            "schema": {
+              "$ref": "#/definitions/WorkerSite"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/WorkerSiteDetil"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/workerSites/{workerSiteID}": {
+      "get": {
+        "tags": ["WorkerSite Management"],
+        "summary": "Create Workersites",
+        "description": "TBD",
+        "operationId": "GetWorkerSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "workerSiteID",
+            "type": "integer",
+            "description": "the workers siteid to get"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/WorkerSiteDetil"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["WorkerSite Management"],
+        "summary": "Delete Workersites",
+        "description": "TBD",
+        "operationId": "DeleteWorkerSite",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "workerSiteID",
+            "type": "integer",
+            "description": "the workers siteid to delete"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2013,6 +3101,85 @@
       "type": "object",
       "properties": {
         "entityID": {
+          "type": "integer"
+        }
+      }
+    },
+    "WorkerSiteDetil": {
+      "description": "Model that represent an project record",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/WorkerSite"
+        }
+      ],
+      "properties": {
+        "workerSiteID": {
+          "type": "string"
+        }
+      }
+    },
+    "WorkerSite": {
+      "type": "object",
+      "properties": {
+        "workerName": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "sshUser": {
+          "type": "string"
+        },
+        "sshKey": {
+          "type": "string"
+        },
+        "homeDir": {
+          "type": "string"
+        },
+        "workDir": {
+          "type": "string"
+        }
+      }
+    },
+    "Metric": {
+      "description": "Metric record",
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "integer"
+        },
+        "reqCount": {
+          "type": "integer"
+        },
+        "timeoutCount": {
+          "type": "integer"
+        },
+        "unreachableCount": {
+          "type": "integer"
+        },
+        "totalResponseTimeMs": {
+          "type": "integer"
+        },
+        "fastestResonseTimeMs": {
+          "type": "integer"
+        },
+        "slowestResponseTimeMs": {
+          "type": "integer"
+        },
+        "averageResponseTimeMs": {
+          "type": "number"
+        },
+        "code2xxCount": {
+          "type": "integer"
+        },
+        "code3xxCount": {
+          "type": "integer"
+        },
+        "code4xxCount": {
+          "type": "integer"
+        },
+        "code5xxCount": {
           "type": "integer"
         }
       }
@@ -2247,6 +3414,144 @@
       "properties": {
         "role": {
           "type": "string"
+        }
+      }
+    },
+    "ProbeTaskDetail": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        {
+          "$ref": "#/definitions/ProbeTask"
+        }
+      ],
+      "properties": {
+        "entityID": {
+          "type": "integer"
+        }
+      }
+    },
+    "ProbeTask": {
+      "description": "Probe task definition",
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEADER", "PATCH"]
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string"
+        },
+        "acceptEncoding": {
+          "type": "string"
+        },
+        "accept": {
+          "type": "string"
+        },
+        "authorization": {
+          "type": "string"
+        },
+        "cookie": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "headerTimeout": {
+          "type": "integer"
+        },
+        "responseTimeout": {
+          "type": "integer"
+        }
+      }
+    },
+    "DatabaseConfig": {
+      "type": "object",
+      "properties": {
+        "database": {
+          "type": "string",
+          "enum": ["MYSQL", "POSTGRESQL", "SQLITE"]
+        },
+        "dbConnString": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "dbUser": {
+          "type": "string"
+        },
+        "dbPassword": {
+          "type": "string"
+        },
+        "dbFilePath": {
+          "type": "string"
+        },
+        "dbSchema": {
+          "type": "string"
+        }
+      }
+    },
+    "MailConfig": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": ["SENDMAIL", "MAILGUN", "MAILCHIMP", "SENDGRID", "MAILJET"]
+        },
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "mailUser": {
+          "type": "string"
+        },
+        "mailPassword": {
+          "type": "string"
+        },
+        "fromMail": {
+          "type": "string"
+        },
+        "fromName": {
+          "type": "string"
+        },
+        "mailAPIURL": {
+          "type": "string"
+        },
+        "mailAPIToken": {
+          "type": "string"
+        }
+      }
+    },
+    "SetupStatus": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["OPEN", "CLOSE"]
+        },
+        "setupToken": {
+          "type": "string",
+          "description": "A token that can only be used for setup purpos only, if the status is CLOSE, this setup token attribute should not be returned"
         }
       }
     }
