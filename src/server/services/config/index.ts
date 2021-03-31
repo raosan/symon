@@ -17,50 +17,21 @@
  *                                                                                *
  **********************************************************************************/
 
-import { PrismaClient } from "@prisma/client";
+import express from "express";
+import validate from "../../internal/middleware/validator";
+import {
+  createSchemaValidator,
+  findSchemaValidator,
+  updateSchemaValidator,
+} from "./schema";
+import { create, destroy, findById, findMany, update } from "./controller";
 
-const prisma = new PrismaClient();
+const router = express.Router();
 
-async function main() {
-  await prisma.user.upsert({
-    where: { email: "admin@symon.org" },
-    update: {},
-    create: {
-      email: "admin@symon.org",
-      password_hash:
-        "$argon2d$v=19$m=1024,t=1,p=1$c29tZXNhbHQ$vMacEP0ocxrbJBctoJAdg+hYD8DrnAnR5d4x4YL3RHU", //hashed password from: right password
-      enabled: 1,
-      suspended: 0,
-    },
-  });
+router.get("/v1/configs", validate(findSchemaValidator), findMany);
+router.get("/v1/configs/:key", findById);
+router.post("/v1/configs", validate(createSchemaValidator), create);
+router.put("/v1/configs/:key", validate(updateSchemaValidator), update);
+router.delete("/v1/configs/:key", destroy);
 
-  const configs = [
-    { key: "env", value: "development" },
-    { key: "jwtSecret", value: "8080" },
-    { key: "dbHost", value: "file:./dev.db" },
-    { key: "jwtSecret", value: "thisIsJwtSecret" },
-    { key: "jwtIssuer", value: "symon.org" },
-    { key: "jwtAccessExpired", value: "5m" },
-    { key: "jwtRefreshExpired", value: "1y" },
-    { key: "jwtAlgorithm", value: "HS256" },
-  ];
-
-  configs.map(async config => {
-    await prisma.config.upsert({
-      where: { key: config.key },
-      update: {},
-      create: {
-        key: config.key,
-        value: config.value,
-      },
-    });
-  });
-}
-main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+export default router;

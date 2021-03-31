@@ -48,3 +48,8 @@ model probe {
   cron      String
   project   project @relation(fields: [projectID], references: [id])
 }
+
+model config {
+  key   String @id
+  value String
+} 
