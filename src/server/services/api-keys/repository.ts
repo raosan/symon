@@ -17,42 +17,58 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { APIKey, APIKeyCreate, APIKeyUpdate } from "./entity";
+import Prisma from "../../prisma/prisma-client";
 
-import apiKeys from "./services/api-keys";
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import locations from "./services/locations";
-import monika from "./services/monika";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
+export class Repository {
+  async findMany(args?: {
+    skip?: number;
+    take?: number;
+    orderBy?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    where?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  }): Promise<APIKey[]> {
+    const data = await Prisma.apiKey.findMany(args);
 
-const router = express.Router();
+    return data;
+  }
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
+  async findById(id: number): Promise<APIKey | null> {
+    const result = await Prisma.apiKey.findUnique({
+      where: { id },
+    });
 
-router.use(auth);
+    return result;
+  }
 
-router.use(authMiddleware);
+  async create(data: APIKeyCreate): Promise<APIKey> {
+    const result = await Prisma.apiKey.create({
+      data: {
+        projectID: data.projectID,
+        apiKey: data.apiKey,
+        isEnabled: data.isEnabled,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        createdBy: data.createdBy,
+        updatedBy: data.updatedBy,
+      },
+    });
 
-// ********************************
-// Protected Endpoints ************
-// ********************************
+    return result;
+  }
 
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-router.use(apiKeys);
-router.use(monika);
+  async update(data: APIKeyUpdate): Promise<APIKey> {
+    const { id, isEnabled, updatedAt, updatedBy } = data;
+    const result = await Prisma.apiKey.update({
+      where: { id },
+      data: { isEnabled, updatedAt, updatedBy },
+    });
 
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
+    return result;
+  }
 
-export default router;
+  async deleteByID(id: number): Promise<void> {
+    await Prisma.apiKey.delete({
+      where: { id },
+    });
+  }
+}

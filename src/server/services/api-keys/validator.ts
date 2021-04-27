@@ -17,42 +17,12 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { object, bool, number } from "joi";
 
-import apiKeys from "./services/api-keys";
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import locations from "./services/locations";
-import monika from "./services/monika";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
-
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
+export const createValidator = object().keys({
+  projectID: number().required().label("Project ID"),
 });
 
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-router.use(apiKeys);
-router.use(monika);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
-
-export default router;
+export const updateValidator = object().keys({
+  isEnabled: bool().required().label("API Key Status"),
+});

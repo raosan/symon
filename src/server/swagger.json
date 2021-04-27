@@ -1632,6 +1632,233 @@
         }
       }
     },
+    "/projects/{projectEntityID}/api-keys": {
+      "get": {
+        "tags": ["API Key"],
+        "summary": "To list all API Key registered in this Symon Core under a project",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "projectEntityID",
+            "description": "Organization entity id",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "offset",
+            "description": "Offset number to query, Optional. Default 0",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "size",
+            "description": "Number or items to return, Optional. Default 10",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "required": false,
+            "name": "order",
+            "description": "Sort order of probe name, Optional. Default ASC",
+            "type": "string",
+            "enum": ["ASC", "DESC"]
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/APIKey"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api-keys": {
+      "post": {
+        "tags": ["API Key"],
+        "summary": "To create new API Key",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateAPIKey"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/APIKey"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api-keys/{apiKeyEntityID}": {
+      "put": {
+        "tags": ["API Key"],
+        "summary": "To change API Key detail",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "apiKeyEntityID",
+            "description": "the API Key entityID",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAPIKey"
+            }
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/BaseResponse"
+                }
+              ],
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/APIKey"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing mandatory information - invalid data"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["API Key"],
+        "summary": "To delete an API key",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "apiKeyEntityID",
+            "type": "integer"
+          }
+        ],
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/BaseResponse"
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/probes/{probeEntityID}": {
       "get": {
         "tags": ["Probe Management"],
@@ -3082,6 +3309,48 @@
     }
   },
   "definitions": {
+    "APIKey": {
+      "description": "API Key",
+      "type": "object",
+      "properties": {
+        "id": {
+          "example": 1,
+          "type": "integer"
+        },
+        "projectID": {
+          "example": 1,
+          "type": "integer"
+        },
+        "apiKey": {
+          "example": "random-string",
+          "type": "string"
+        },
+        "isEnabled": {
+          "example": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "CreateAPIKey": {
+      "description": "Create New API Key",
+      "type": "object",
+      "properties": {
+        "projectID": {
+          "example": 1,
+          "type": "integer"
+        }
+      }
+    },
+    "UpdateAPIKey": {
+      "description": "Update API Key",
+      "type": "object",
+      "properties": {
+        "isEnabled": {
+          "example": true,
+          "type": "boolean"
+        }
+      }
+    },
     "BaseResponse": {
       "required": ["result"],
       "type": "object",

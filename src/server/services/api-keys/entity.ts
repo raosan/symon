@@ -17,42 +17,22 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+export type APIKey = {
+  id: number;
+  projectID: number;
+  apiKey: string;
+  isEnabled: boolean;
+  createdAt: number;
+  updatedAt: number;
+  createdBy: string;
+  updatedBy: string;
+};
 
-import apiKeys from "./services/api-keys";
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import locations from "./services/locations";
-import monika from "./services/monika";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
+export type APIKeyCreate = Omit<APIKey, "id">;
 
-const router = express.Router();
-
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-router.use(apiKeys);
-router.use(monika);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
-
-export default router;
+export type APIKeyUpdate = {
+  id: number;
+  isEnabled: boolean;
+  updatedAt: number;
+  updatedBy: string;
+};

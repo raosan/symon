@@ -17,42 +17,17 @@
  *                                                                                *
  **********************************************************************************/
 
-import express from "express";
+import { Router } from "express";
 
-import apiKeys from "./services/api-keys";
-import auth from "./services/auth";
-import authMiddleware from "./services/auth/middleware";
-import locations from "./services/locations";
-import monika from "./services/monika";
-import organizations from "./services/organizations";
-import probes from "./services/probes";
-import projects from "./services/projects";
-import users from "./services/users";
+import validate from "../../internal/middleware/validator";
+import { index, create, update, destroy } from "./controller";
+import { createValidator, updateValidator } from "./validator";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/", (_, res) => {
-  res.send("Hello World!");
-});
-
-router.use(auth);
-
-router.use(authMiddleware);
-
-// ********************************
-// Protected Endpoints ************
-// ********************************
-
-router.use(users);
-router.use(organizations);
-router.use(locations);
-router.use(probes);
-router.use(projects);
-router.use(apiKeys);
-router.use(monika);
-
-// ********************************
-// End of Protected Endpoints *****
-// ********************************
+router.get("/v1/projects/:id/api-keys", index);
+router.post("/v1/api-keys", validate(createValidator), create);
+router.put("/v1/api-keys/:id", validate(updateValidator), update);
+router.delete("/v1/api-keys/:id", destroy);
 
 export default router;

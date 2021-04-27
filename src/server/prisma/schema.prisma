@@ -33,10 +33,11 @@ model location {
 }
 
 model project {
-  id              Int     @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   name            String
   organization_id Int
   probe           probe[]
+  apiKey          apiKey[]
 }
 
 model probe {
@@ -54,10 +55,22 @@ model config {
   value String
 }
 
+model apiKey {
+  id        Int     @id @default(autoincrement())
+  projectID Int
+  apiKey    String
+  isEnabled Boolean @default(true)
+  createdAt Int
+  updatedAt Int
+  createdBy String
+  updatedBy String
+  project   project @relation(fields: [projectID], references: [id])
+}
+
 model monika {
-  id                  Int     @id @default(autoincrement())
-  config              String
-  version             String  @unique
-  monika_id           String
-  monika_ip_address   String
+  id                Int    @id @default(autoincrement())
+  config            String
+  version           String @unique
+  monika_id         String
+  monika_ip_address String
 }
