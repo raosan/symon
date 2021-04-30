@@ -37,3 +37,21 @@ const handshakeSchemaValidator = Joi.object().keys({
 export const createHandshakeSchemaValidator = handshakeSchemaValidator;
 
 export const updateHandshakeSchemaValidator = handshakeSchemaValidator;
+
+const reportDataSchemaValidator = Joi.object().keys({
+  timestamp: Joi.number().required(),
+  probe_id: Joi.string().required(),
+  request_method: Joi.string().required(),
+  request_url: Joi.string().required(),
+  request_header: Joi.string(),
+  response_status: Joi.number().required(),
+  response_header: Joi.string(),
+  response_time: Joi.number().required(),
+  response_size: Joi.number(),
+});
+
+export const createReportSchemaValidator = Joi.object().keys({
+  monika_instance_id: Joi.string().required(),
+  config_version: Joi.string().required(),
+  data: Joi.array().items(reportDataSchemaValidator),
+});

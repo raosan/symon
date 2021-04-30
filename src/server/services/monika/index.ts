@@ -21,8 +21,11 @@ import express from "express";
 
 import validate from "../../internal/middleware/validator";
 import apiKeyMiddleware from "../api-keys/middleware";
-import { createHandshake } from "./controller";
-import { createHandshakeSchemaValidator } from "./validator";
+import { createReport, createHandshake } from "./controller";
+import {
+  createHandshakeSchemaValidator,
+  createReportSchemaValidator,
+} from "./validator";
 
 const router = express.Router();
 
@@ -31,6 +34,12 @@ router.post(
   apiKeyMiddleware,
   validate(createHandshakeSchemaValidator),
   createHandshake,
+);
+router.post(
+  "/v1/monika/report",
+  apiKeyMiddleware,
+  validate(createReportSchemaValidator),
+  createReport,
 );
 
 export default router;

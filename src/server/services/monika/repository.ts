@@ -18,9 +18,50 @@
  **********************************************************************************/
 
 import { v4 as uuid } from "uuid";
-
+import { Report, ReportCreate, MonikaHandshakeCreate, Monika } from "./entity";
 import Prisma from "../../prisma/prisma-client";
-import { MonikaHandshakeCreate } from "./entity";
+
+export class ReportRepository {
+  async findMany(args?: {
+    offset: number;
+    size: number;
+    order: "asc" | "desc";
+  }): Promise<Report[]> {
+    const data = await Prisma.report.findMany({
+      take: args?.size,
+      skip: args?.offset,
+      orderBy: {
+        id: args?.order,
+      },
+      include: { data: true },
+    });
+
+    return data;
+  }
+
+  async findById(id: number): Promise<Report | null> {
+    const result = await Prisma.report.findUnique({
+      where: { id },
+      include: { data: true },
+    });
+
+    return result;
+  }
+
+  async create(report: ReportCreate): Promise<Report> {
+    const result = await Prisma.report.create({
+      data: {
+        ...report,
+        data: {
+          create: report.data,
+        },
+      },
+      include: { data: true, monika: true },
+    });
+
+    return result;
+  }
+}
 
 export class MonikaRepository {
   async createHandshake({
@@ -31,13 +72,17 @@ export class MonikaRepository {
       data: {
         version: uuid(),
         config: JSON.stringify(config),
-        monika_id: res.monika.id,
-        monika_ip_address: res.monika.ip_address,
+        instanceId: res.monika.id,
+        ipAddress: res.monika.ip_address,
       },
     });
 
     return {
       version: data.version,
     };
+  }
+
+  findOneByInstanceID(id: string): Promise<Monika | null> {
+    return Prisma.monika.findFirst({ where: { instanceId: id } });
   }
 }

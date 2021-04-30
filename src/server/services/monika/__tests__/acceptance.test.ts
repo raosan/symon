@@ -17,16 +17,19 @@
  *                                                                                *
  **********************************************************************************/
 
-import bodyParser from "body-parser";
 import express from "express";
 import faker from "faker";
 import request from "supertest";
 
 import errorHandler from "../../../internal/middleware/error-handler";
+import {
+  MonikaHandshake,
+  MonikaHandshakeCreate,
+  ReportCreate,
+} from "../entity";
+import monika from "../index";
+import { MonikaRepository, ReportRepository } from "../repository";
 import { Repository as ApiKeyRepository } from "../../api-keys/repository";
-import { MonikaHandshake, MonikaHandshakeCreate } from "../entity";
-import organization from "../index";
-import { MonikaRepository } from "../repository";
 
 const handshakes: MonikaHandshake[] = [
   {
@@ -64,11 +67,11 @@ const handshakes: MonikaHandshake[] = [
   },
 ];
 
-describe("MonikaHandshake Service", () => {
+describe("Monika Handshake Service", () => {
   const app = express();
 
-  app.use(bodyParser.json());
-  app.use(organization);
+  app.use(express.json());
+  app.use(monika);
   app.use(errorHandler());
 
   beforeEach(function () {
@@ -158,6 +161,65 @@ describe("MonikaHandshake Service", () => {
 
       expect(res.status).toBe(422);
       done();
+    });
+  });
+});
+
+describe("Monika Report Service", () => {
+  const app = express();
+
+  app.use(express.json());
+  app.use(monika);
+  app.use(errorHandler());
+
+  beforeEach(function () {
+    jest.mock("../repository");
+
+    MonikaRepository.prototype.findOneByInstanceID = async (id: string) => {
+      return {
+        id: 1,
+        config: "{}",
+        version: faker.random.uuid(),
+        instanceId: id,
+        ipAddress: "127.0.0.1",
+      };
+    };
+
+    ReportRepository.prototype.create = async (reportCreate: ReportCreate) => {
+      const createdReport = {
+        id: 2,
+        ...reportCreate,
+        monikaId: 1,
+        data: reportCreate.data.map((d, i) => ({ id: i, ...d })),
+      };
+
+      return createdReport;
+    };
+  });
+
+  describe("POST /v1/monika/report", () => {
+    const mockData = {
+      monika_instance_id: faker.random.uuid(),
+      config_version: faker.random.uuid(),
+      data: [],
+    };
+
+    it("should return http status code 201", async () => {
+      const res = await request(app)
+        .post("/v1/monika/report")
+        .set({ "x-api-key": "123" })
+        .send(mockData);
+
+      expect(res.status).toStrictEqual(201);
+    });
+
+    it("should return http status code 400", async () => {
+      const res = await request(app)
+        .post("/v1/monika/report")
+        .set({ "x-api-key": "123" })
+        .send({});
+
+      expect(res.status).toEqual(400);
     });
   });
 });

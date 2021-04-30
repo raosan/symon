@@ -68,9 +68,39 @@ model apiKey {
 }
 
 model monika {
-  id                Int    @id @default(autoincrement())
-  config            String
-  version           String @unique
-  monika_id         String
-  monika_ip_address String
+  id         Int    @id @default(autoincrement())
+  config     String
+  version    String @unique
+  instanceId String @map(name: "instance_id")
+  ipAddress  String @map(name: "ip_address")
+
+  report report[]
+}
+
+model report {
+  id               Int    @id @default(autoincrement())
+  monikaId         Int    @map(name: "monika_id")
+  configVersion    String @map(name: "config_version")
+  monikaInstanceId String @map(name: "monika_instance_id")
+
+  data   reportData[]
+  monika monika       @relation(fields: [monikaId], references: [id])
+}
+
+model reportData {
+  id             Int     @id @default(autoincrement())
+  reportId       Int     @map(name: "report_id")
+  timestamp      Int
+  probeId        String  @map(name: "probe_id")
+  requestMethod  String  @map(name: "request_method")
+  requestUrl     String  @map(name: "request_url")
+  requestHeader  String? @map(name: "request_header")
+  requestBody    String? @map(name: "request_body")
+  responseStatus Int     @map(name: "response_status")
+  responseHeader String? @map(name: "response_header")
+  responseBody   String? @map(name: "response_body")
+  responseTime   Int     @map(name: "response_time")
+  responseSize   Int?    @map(name: "response_size")
+
+  report report @relation(fields: [reportId], references: [id])
 }

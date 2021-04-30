@@ -20,9 +20,10 @@
 import { NextFunction, Request, Response } from "express";
 
 import { AppError, commonHTTPErrors } from "../../internal/app-error";
-import { MonikaRepository } from "./repository";
+import { MonikaRepository, ReportRepository } from "./repository";
 
-const repository = new MonikaRepository();
+const monikaRepository = new MonikaRepository();
+const reportRepository = new ReportRepository();
 
 export async function createHandshake(
   req: Request,
@@ -32,7 +33,7 @@ export async function createHandshake(
   const { data: configData, monika } = req.body;
 
   try {
-    const data = await repository.createHandshake({
+    const data = await monikaRepository.createHandshake({
       monika,
       config: configData,
     });
@@ -48,6 +49,58 @@ export async function createHandshake(
       err.message,
       true,
     );
+
+    next(error);
+  }
+}
+
+export async function createReport(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { monika_instance_id, config_version, data: reportData } = req.body;
+
+    const monika = await monikaRepository.findOneByInstanceID(
+      monika_instance_id,
+    );
+
+    if (!monika) {
+      throw new AppError(
+        commonHTTPErrors.badRequest,
+        "Invalid monika_id",
+        true,
+      );
+    }
+
+    await reportRepository.create({
+      monikaId: monika.id,
+      monikaInstanceId: monika.instanceId,
+      configVersion: config_version,
+      data: reportData,
+    });
+
+    const isConfigUpdated = monika.version !== config_version;
+    const config = JSON.parse(monika?.config ?? "{}");
+
+    res.status(201).send({
+      result: isConfigUpdated ? "updated" : "ok",
+      message: "Successfully report history",
+      ...(isConfigUpdated
+        ? {
+            data: {
+              config_version: monika.version,
+              ...config,
+            },
+          }
+        : {}),
+    });
+  } catch (err) {
+    const error =
+      err instanceof AppError
+        ? err
+        : new AppError(commonHTTPErrors.unprocessableEntity, err.message, true);
 
     next(error);
   }
