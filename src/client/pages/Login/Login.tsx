@@ -17,7 +17,7 @@
  *                                                                                *
  **********************************************************************************/
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import Button from "../../components/Button";
@@ -36,6 +36,22 @@ export const Login: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { mutate: login, isLoading } = useLogin();
+
+  useEffect(() => {
+    const rememberMeStoredValue = window.localStorage.getItem("rememberMe");
+    const remember = rememberMeStoredValue === "true" ? true : false;
+    const accessToken = window.localStorage.getItem("at");
+
+    if (remember && !!accessToken) {
+      history.replace("/");
+    } else {
+      setData(prev => ({
+        ...prev,
+        remember,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <LoginView
@@ -142,7 +158,14 @@ export const LoginView: FC<LoginViewProps> = ({
                 type="checkbox"
                 className="h-4 w-4 focus:ring-transparent text-bw border-gray-300 rounded"
                 checked={data.remember}
-                onChange={e => onChangeData?.("remember", e.target.checked)}
+                onChange={e => {
+                  const isChecked = e.target.checked;
+                  window.localStorage.setItem(
+                    "rememberMe",
+                    isChecked === true ? "true" : "false",
+                  );
+                  onChangeData?.("remember", isChecked);
+                }}
               />
               <label htmlFor="remember" className="ml-2 block text-sm">
                 Remember me
