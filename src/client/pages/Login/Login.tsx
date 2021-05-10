@@ -33,6 +33,7 @@ export const Login: FC = () => {
     password: "",
     remember: false,
   });
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { mutate: login, isLoading } = useLogin();
 
@@ -40,18 +41,23 @@ export const Login: FC = () => {
     <LoginView
       data={data}
       onChangeData={(field, value) => {
+        setErrorMessage("");
         setData(prev => ({
           ...prev,
           [field]: value,
         }));
       }}
       isLoading={isLoading}
+      errorMessage={errorMessage}
       onSubmit={() => {
         login(
           { email: data.email, password: data.password },
           {
             onSuccess() {
               history.replace("/");
+            },
+            onError(error) {
+              setErrorMessage(error.message);
             },
           },
         );
@@ -70,6 +76,7 @@ export interface LoginViewProps {
   data?: LoginFormData;
   onChangeData?(field: string, value: unknown): void;
   isLoading?: boolean;
+  errorMessage?: string;
   onSubmit?(): void;
 }
 
@@ -77,6 +84,7 @@ export const LoginView: FC<LoginViewProps> = ({
   data = { email: "", password: "", remember: false },
   onChangeData,
   isLoading = false,
+  errorMessage,
   onSubmit,
 }) => (
   <div>
@@ -104,6 +112,8 @@ export const LoginView: FC<LoginViewProps> = ({
                 autoComplete="email"
                 value={data.email}
                 onChange={e => onChangeData?.("email", e.target.value)}
+                type="email"
+                required
               />
             </div>
           </div>
@@ -120,6 +130,7 @@ export const LoginView: FC<LoginViewProps> = ({
                 type="password"
                 value={data.password}
                 onChange={e => onChangeData?.("password", e.target.value)}
+                required
               />
             </div>
           </div>
@@ -139,6 +150,9 @@ export const LoginView: FC<LoginViewProps> = ({
             </div>
           </div>
           <div className="ml-24">
+            {!!errorMessage && (
+              <p className="text-red-500 mb-4">{errorMessage}</p>
+            )}
             <Button label="Login" type="submit" disabled={isLoading} />
           </div>
         </div>

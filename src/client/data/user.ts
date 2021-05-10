@@ -42,6 +42,9 @@ export const useLogin = (): UseMutationResult<
     onSuccess(response) {
       setToken(response.data);
     },
+    onError() {
+      // do nothing
+    },
   });
 };
 
