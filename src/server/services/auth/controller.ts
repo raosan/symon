@@ -37,6 +37,69 @@ const repo = new UserRepository();
 
 setupPassport(repo);
 
+export async function checkHasUser(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const data = await repo.findMany({ offset: 0, size: 10, order: "asc" });
+
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully get users",
+      isUsers: data.length > 0 ? true : false,
+    });
+  } catch (err) {
+    const error = new AppError(
+      commonHTTPErrors.unprocessableEntity,
+      err.message,
+      true,
+    );
+
+    next(error);
+  }
+}
+
+export async function createFirstUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { email, password } = req.body;
+
+    const users = await repo.findMany({ offset: 0, size: 10, order: "asc" });
+    const hasUser = users?.length > 0;
+
+    if (hasUser) {
+      throw new Error("There is already a user created to login");
+    }
+
+    const data = await repo.create({
+      email,
+      password,
+      enabled: 1,
+      suspended: 0,
+    });
+
+    res.status(201).send({
+      result: "SUCCESS",
+      message:
+        "Successfully create user. Now you can login with the created user",
+      data,
+    });
+  } catch (err) {
+    const error = new AppError(
+      commonHTTPErrors.unprocessableEntity,
+      err.message,
+      true,
+    );
+
+    next(error);
+  }
+}
+
 export async function login(
   req: Request,
   res: Response,
@@ -112,7 +175,6 @@ export async function refresh(
     const isTokenValid =
       !isTokenExpired && decoded.iss === JWT_ISSUER && decoded.exp > 0;
 
-    const repo = new UserRepository();
     const user = await repo.findOneByEmail(decoded.sub);
     const isUserExistAndActive = user && user.enabled && !user.suspended;
 
