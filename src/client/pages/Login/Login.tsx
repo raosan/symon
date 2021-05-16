@@ -18,11 +18,13 @@
  **********************************************************************************/
 
 import { FC, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useHistory } from "react-router-dom";
 
 import Button from "../../components/Button";
 import Header from "../../components/Header";
 import Input from "../../components/Input";
+import { fetcher } from "../../data/requests";
 import { useLogin } from "../../data/user";
 
 export const Login: FC = () => {
@@ -36,6 +38,12 @@ export const Login: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { mutate: login, isLoading } = useLogin();
+
+  const { data: checkUserData } = useQuery("checkUsers", () =>
+    fetcher(`/auth/check-users`, {
+      method: "GET",
+    }),
+  );
 
   useEffect(() => {
     const rememberMeStoredValue = window.localStorage.getItem("rememberMe");
@@ -53,6 +61,35 @@ export const Login: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const doLogin = () => {
+    login(
+      { email: data.email, password: data.password },
+      {
+        onSuccess() {
+          history.replace("/");
+        },
+        onError(error) {
+          setErrorMessage(error.message);
+        },
+      },
+    );
+  };
+
+  const createFirstUser = async () => {
+    try {
+      const response = await fetcher(`/auth/user`, {
+        method: "POST",
+        body: { email: data.email, password: data.password },
+      });
+
+      if (response.data) {
+        doLogin();
+      }
+    } catch (error) {
+      setErrorMessage(error?.message);
+    }
+  };
+
   return (
     <LoginView
       data={data}
@@ -65,18 +102,13 @@ export const Login: FC = () => {
       }}
       isLoading={isLoading}
       errorMessage={errorMessage}
+      hasUser={checkUserData?.hasUser}
       onSubmit={() => {
-        login(
-          { email: data.email, password: data.password },
-          {
-            onSuccess() {
-              history.replace("/");
-            },
-            onError(error) {
-              setErrorMessage(error.message);
-            },
-          },
-        );
+        if (checkUserData?.hasUser) {
+          doLogin();
+        } else {
+          createFirstUser();
+        }
       }}
     />
   );
@@ -93,6 +125,7 @@ export interface LoginViewProps {
   onChangeData?(field: string, value: unknown): void;
   isLoading?: boolean;
   errorMessage?: string;
+  hasUser?: boolean;
   onSubmit?(): void;
 }
 
@@ -101,6 +134,7 @@ export const LoginView: FC<LoginViewProps> = ({
   onChangeData,
   isLoading = false,
   errorMessage,
+  hasUser,
   onSubmit,
 }) => (
   <div>
@@ -114,7 +148,9 @@ export const LoginView: FC<LoginViewProps> = ({
         }}
       >
         <div className="w-10/12 mx-auto pt-10 pb-12">
-          <div className="mb-6 font-bold">Login</div>
+          <div className="mb-6 font-bold">
+            {hasUser ? "Login" : "Create new user"}
+          </div>
           <div className="flex justify-end items-center mb-4">
             <label
               htmlFor="email"
@@ -176,7 +212,15 @@ export const LoginView: FC<LoginViewProps> = ({
             {!!errorMessage && (
               <p className="text-red-500 mb-4">{errorMessage}</p>
             )}
-            <Button label="Login" type="submit" disabled={isLoading} />
+            {isLoading ? (
+              "Loading..."
+            ) : (
+              <Button
+                label={hasUser ? "Login" : "Create"}
+                type="submit"
+                disabled={isLoading}
+              />
+            )}
           </div>
         </div>
       </form>

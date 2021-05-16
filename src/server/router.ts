@@ -39,7 +39,7 @@ router.get("/", (_, res) => {
 router.use(auth);
 router.use(monika);
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // ********************************
 // Protected Endpoints ************

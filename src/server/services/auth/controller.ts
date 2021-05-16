@@ -48,7 +48,7 @@ export async function checkHasUser(
     res.status(200).send({
       result: "SUCCESS",
       message: "Successfully get users",
-      isUsers: data.length > 0 ? true : false,
+      hasUser: data.length > 0 ? true : false,
     });
   } catch (err) {
     const error = new AppError(
