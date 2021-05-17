@@ -105,20 +105,6 @@ export async function login(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const {
-    body: { email, password },
-  } = req;
-
-  if (!email || !password) {
-    const error = new AppError(
-      commonHTTPErrors.badRequest,
-      "Bad request, missing mandatory information",
-      true,
-    );
-
-    return next(error);
-  }
-
   return passport.authenticate(
     "local",
     { session: false },
@@ -154,17 +140,6 @@ export async function refresh(
   const {
     body: { refreshToken },
   } = req;
-
-  if (!refreshToken) {
-    const error = new AppError(
-      commonHTTPErrors.badRequest,
-      "Bad request, missing mandatory information",
-      true,
-    );
-
-    return next(error);
-  }
-
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decoded: any = jwt.verify(refreshToken, JWT_SECRET); // TODO: create definition for JWT
