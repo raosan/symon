@@ -58,8 +58,7 @@ export const Login: FC = () => {
         remember,
       }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [history]);
 
   const doLogin = () => {
     login(
@@ -186,28 +185,30 @@ export const LoginView: FC<LoginViewProps> = ({
               />
             </div>
           </div>
-          <div className="flex items-center justify-between ml-24 font-light text-gray-500 mb-8">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 focus:ring-transparent text-bw border-gray-300 rounded"
-                checked={data.remember}
-                onChange={e => {
-                  const isChecked = e.target.checked;
-                  window.localStorage.setItem(
-                    "rememberMe",
-                    isChecked === true ? "true" : "false",
-                  );
-                  onChangeData?.("remember", isChecked);
-                }}
-              />
-              <label htmlFor="remember" className="ml-2 block text-sm">
-                Remember me
-              </label>
+          {hasUser && (
+            <div className="flex items-center justify-between ml-24 font-light text-gray-500 mb-8">
+              <div className="flex items-center">
+                <input
+                  id="remember"
+                  name="remember"
+                  type="checkbox"
+                  className="h-4 w-4 focus:ring-transparent text-bw border-gray-300 rounded"
+                  checked={data.remember}
+                  onChange={e => {
+                    const isChecked = e.target.checked;
+                    window.localStorage.setItem(
+                      "rememberMe",
+                      isChecked === true ? "true" : "false",
+                    );
+                    onChangeData?.("remember", isChecked);
+                  }}
+                />
+                <label htmlFor="remember" className="ml-2 block text-sm">
+                  Remember me
+                </label>
+              </div>
             </div>
-          </div>
+          )}
           <div className="ml-24">
             {!!errorMessage && (
               <p className="text-red-500 mb-4">{errorMessage}</p>
