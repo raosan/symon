@@ -147,7 +147,13 @@ describe("Monika Report Service", () => {
         id: 2,
         ...reportCreate,
         monikaId: 1,
-        data: reportCreate.data.map((d, i) => ({ id: i, ...d })),
+        data: {
+          requests: reportCreate.data.requests.map((d, i) => ({ id: i, ...d })),
+          notifications: reportCreate.data.notifications.map((d, i) => ({
+            id: i,
+            ...d,
+          })),
+        },
       };
 
       return createdReport;
@@ -156,9 +162,53 @@ describe("Monika Report Service", () => {
 
   describe("POST /v1/monika/report", () => {
     const mockData = {
-      monika_instance_id: faker.random.uuid(),
-      config_version: faker.random.uuid(),
-      data: [],
+      monika_instance_id: "monika123",
+      config_version: "abcdef",
+      data: {
+        requests: [
+          {
+            timestamp: 1621339832,
+            probe_id: "0",
+            probe_name: "probe 1",
+            request_method: "get",
+            request_url: "https://httpbin.org/get",
+            request_header:
+              '{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.21.1","host":"httpbin.org"}',
+            response_status: 200,
+            response_header:
+              '{"date":"Tue, 18 May 2021 12:10:32 GMT","content-type":"application/json","content-length":"287","connection":"close","server":"gunicorn/19.9.0","access-control-allow-origin":"*","access-control-allow-credentials":"true"}',
+            response_time: 2283,
+            response_size: 287,
+            alerts: ["response-time-greater-than-1200-ms"],
+          },
+          {
+            timestamp: 1621339841,
+            probe_id: "0",
+            probe_name: "probe 1",
+            request_method: "get",
+            request_url: "https://httpbin.org/get",
+            request_header:
+              '{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.21.1","host":"httpbin.org"}',
+            response_status: 200,
+            response_header:
+              '{"date":"Tue, 18 May 2021 12:10:41 GMT","content-type":"application/json","content-length":"287","connection":"close","server":"gunicorn/19.9.0","access-control-allow-origin":"*","access-control-allow-credentials":"true"}',
+            response_time: 1475,
+            response_size: 287,
+            alerts: ["response-time-greater-than-1200-ms"],
+          },
+        ],
+        notifications: [
+          {
+            timestamp: 1621339832,
+            probe_id: "0",
+            probe_name: "probe 1",
+            alert_type: "response-time-greater-than-1200-ms",
+            type: "NOTIFY-INCIDENT",
+            notification_id: "unique-id-webhook",
+            channel: "webhook",
+          },
+        ],
+      },
     };
 
     it("should return http status code 201", async () => {

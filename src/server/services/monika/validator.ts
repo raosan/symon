@@ -28,9 +28,10 @@ export const createHandshakeSchemaValidator = handshakeSchemaValidator;
 
 export const updateHandshakeSchemaValidator = handshakeSchemaValidator;
 
-const reportDataSchemaValidator = Joi.object().keys({
+const requestsDataSchemaValidator = Joi.object().keys({
   timestamp: Joi.number().required(),
   probe_id: Joi.string().required(),
+  probe_name: Joi.string(),
   request_method: Joi.string().required(),
   request_url: Joi.string().required(),
   request_header: Joi.string(),
@@ -40,10 +41,24 @@ const reportDataSchemaValidator = Joi.object().keys({
   response_body: Joi.string(),
   response_time: Joi.number().required(),
   response_size: Joi.number(),
+  alerts: Joi.array().items(Joi.string()),
+});
+
+const notificationsDataSchemaValidator = Joi.object().keys({
+  timestamp: Joi.number().required(),
+  probe_id: Joi.string().required(),
+  probe_name: Joi.string(),
+  alert_type: Joi.string().required(),
+  type: Joi.string().required(),
+  notification_id: Joi.string().required(),
+  channel: Joi.string().required(),
 });
 
 export const createReportSchemaValidator = Joi.object().keys({
   monika_instance_id: Joi.string().required(),
   config_version: Joi.string().required(),
-  data: Joi.array().items(reportDataSchemaValidator),
+  data: Joi.object().keys({
+    requests: Joi.array().items(requestsDataSchemaValidator),
+    notifications: Joi.array().items(notificationsDataSchemaValidator),
+  }),
 });

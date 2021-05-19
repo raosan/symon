@@ -29,25 +29,46 @@ export interface Report<T = ReportData> {
   monikaInstanceId: string;
   monika?: monika;
   configVersion: string;
-  data: Array<T>;
+  data: T;
 }
 
 interface ReportData {
+  requests: RequestsData[];
+  notifications: NotificationsData[];
+}
+
+interface RequestsData {
   id: number;
   timestamp: number;
   probeId: string;
+  probeName?: string | null;
   requestUrl: string;
   requestMethod: string;
-  requestHeader: string | null;
-  requestBody: string | null;
-  responseHeader: string | null;
-  responseBody: string | null;
+  requestHeader?: string | null;
+  requestBody?: string | null;
+  responseHeader?: string | null;
+  responseBody?: string | null;
   responseStatus: number;
   responseTime: number;
-  responseSize: number | null;
+  responseSize?: number | null;
+  alerts: string[];
+}
+
+interface NotificationsData {
+  id: number;
+  timestamp: number;
+  probeId: string;
+  probeName?: string | null;
+  alert: string;
+  type: string;
+  notificationId: string;
+  channel: string;
 }
 
 export type ReportCreate = Omit<
-  Report<Omit<ReportData, "id">>,
+  Report<{
+    requests: Omit<RequestsData, "id">[];
+    notifications: Omit<NotificationsData, "id">[];
+  }>,
   "id" | "monika"
 >;

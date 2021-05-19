@@ -63,7 +63,7 @@ export async function createReport(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const { monika_instance_id, config_version, data: reportData } = req.body;
+    const { monika_instance_id, config_version, data } = req.body;
 
     const monika = await monikaRepository.findOneByInstanceID(
       monika_instance_id,
@@ -81,20 +81,34 @@ export async function createReport(
       monikaId: monika.id,
       monikaInstanceId: monika.instanceId,
       configVersion: config_version,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: reportData.map((row: any) => ({
-        timestamp: row.timestamp,
-        probeId: row.probe_id,
-        requestUrl: row.request_url,
-        requestMethod: row.request_method,
-        requestHeader: row.request_header,
-        requestBody: row.request_body,
-        responseHeader: row.response_header,
-        responseBody: row.response_body,
-        responseStatus: row.response_status,
-        responseTime: row.response_time,
-        responseSize: row.response_size,
-      })),
+      data: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        requests: data.requests.map((row: any) => ({
+          timestamp: row.timestamp,
+          probeId: row.probe_id,
+          probeName: row.probe_name,
+          requestUrl: row.request_url,
+          requestMethod: row.request_method,
+          requestHeader: row.request_header,
+          requestBody: row.request_body,
+          responseHeader: row.response_header,
+          responseBody: row.response_body,
+          responseStatus: row.response_status,
+          responseTime: row.response_time,
+          responseSize: row.response_size,
+          alerts: row.alerts,
+        })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        notifications: data.notifications.map((row: any) => ({
+          timestamp: row.timestamp,
+          probeId: row.probe_id,
+          probeName: row.probe_name,
+          alert: row.alert_type,
+          type: row.type,
+          notificationId: row.notification_id,
+          channel: row.channel,
+        })),
+      },
     });
 
     res.status(201).json({

@@ -91,15 +91,17 @@ model report {
   configVersion    String @map(name: "config_version")
   monikaInstanceId String @map(name: "monika_instance_id")
 
-  data   reportData[]
-  monika monika       @relation(fields: [monikaId], references: [id])
+  requests      reportRequests[]
+  notifications reportNotifications[]
+  monika        monika                @relation(fields: [monikaId], references: [id])
 }
 
-model reportData {
+model reportRequests {
   id             Int     @id @default(autoincrement())
   reportId       Int     @map(name: "report_id")
   timestamp      Int
   probeId        String  @map(name: "probe_id")
+  probeName      String? @map(name: "probe_name")
   requestMethod  String  @map(name: "request_method")
   requestUrl     String  @map(name: "request_url")
   requestHeader  String? @map(name: "request_header")
@@ -109,6 +111,29 @@ model reportData {
   responseBody   String? @map(name: "response_body")
   responseTime   Int     @map(name: "response_time")
   responseSize   Int?    @map(name: "response_size")
+
+  alerts reportRequestAlerts[]
+  report report                @relation(fields: [reportId], references: [id])
+}
+
+model reportRequestAlerts {
+  id              Int    @id @default(autoincrement())
+  reportRequestId Int    @map(name: "report_request_id")
+  alert           String
+
+  reportRequest reportRequests @relation(fields: [reportRequestId], references: [id])
+}
+
+model reportNotifications {
+  id             Int     @id @default(autoincrement())
+  reportId       Int     @map(name: "report_id")
+  timestamp      Int
+  probeId        String  @map(name: "probe_id")
+  probeName      String? @map(name: "probe_name")
+  alert          String
+  type           String
+  notificationId String  @map(name: "notification_id")
+  channel        String
 
   report report @relation(fields: [reportId], references: [id])
 }

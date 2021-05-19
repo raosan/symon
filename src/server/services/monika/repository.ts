@@ -34,33 +34,75 @@ export class ReportRepository {
       orderBy: {
         id: args?.order,
       },
-      include: { data: true },
+      include: { requests: { include: { alerts: true } }, notifications: true },
     });
 
-    return data;
+    return data.map(({ requests, notifications, ...rest }) => ({
+      ...rest,
+      data: {
+        requests: requests.map(({ alerts, ...rest }) => ({
+          ...rest,
+          alerts: alerts.map(a => a.alert),
+        })),
+        notifications,
+      },
+    }));
   }
 
   async findById(id: number): Promise<Report | null> {
     const result = await Prisma.report.findUnique({
       where: { id },
-      include: { data: true },
+      include: { requests: { include: { alerts: true } }, notifications: true },
     });
 
-    return result;
+    if (!result) return null;
+
+    const { requests, notifications, ...rest } = result;
+    return {
+      ...rest,
+      data: {
+        requests: requests.map(({ alerts, ...rest }) => ({
+          ...rest,
+          alerts: alerts.map(a => a.alert),
+        })),
+        notifications,
+      },
+    };
   }
 
   async create(report: ReportCreate): Promise<Report> {
+    const { data, ...restReport } = report;
     const result = await Prisma.report.create({
       data: {
-        ...report,
-        data: {
-          create: report.data,
+        ...restReport,
+        requests: {
+          create: data.requests.map(({ alerts, ...rest }) => ({
+            ...rest,
+            alerts: { create: alerts.map(alert => ({ alert })) },
+          })),
+        },
+        notifications: {
+          create: data.notifications,
         },
       },
-      include: { data: true, monika: true },
+      include: {
+        requests: { include: { alerts: true } },
+        notifications: true,
+        monika: true,
+      },
     });
 
-    return result;
+    const { requests, notifications, ...restResult } = result;
+    return {
+      ...restResult,
+      data: {
+        requests: requests.map(({ alerts, ...rest }) => ({
+          ...rest,
+          alerts: alerts.map(a => a.alert),
+        })),
+        notifications,
+      },
+    };
   }
 }
 
