@@ -17,40 +17,21 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+import { Story, Meta } from "@storybook/react";
+import Tabs, { tabsProps } from ".";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ProbeRequest from "../pages/probe-requests";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
+export default {
+  title: "Tabs",
+  component: Tabs,
+} as Meta;
 
-export const RouterConfig = (): JSX.Element => {
-  return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
-      <Route
-        path="/:orgName/:projectID/:probeID/requests"
-        component={ProbeRequest}
-      />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
-    </Switch>
-  );
+const Template: Story<tabsProps> = args => <Tabs {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  activeKey: "1",
+  panes: [
+    { key: "1", title: "Tab 1", content: <h1>Title Tab 1</h1> },
+    { key: "2", title: "Tab 2", content: <h2>Title Tab 2</h2> },
+  ],
 };

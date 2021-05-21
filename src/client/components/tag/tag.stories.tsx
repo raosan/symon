@@ -17,40 +17,45 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+import { Story, Meta } from "@storybook/react";
+import Tag, { tagProps } from ".";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ProbeRequest from "../pages/probe-requests";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
+export default {
+  title: "Tag",
+  component: Tag,
+  argTypes: {
+    type: {
+      control: {
+        type: "radio",
+        options: ["success", "info", "warn", "error"],
+      },
+    },
+  },
+} as Meta;
 
-export const RouterConfig = (): JSX.Element => {
-  return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
-      <Route
-        path="/:orgName/:projectID/:probeID/requests"
-        component={ProbeRequest}
-      />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
-    </Switch>
-  );
+const Template: Story<tagProps> = args => <Tag {...args}>{args.children}</Tag>;
+
+export const Default = Template.bind({});
+Default.args = {
+  children: "Default",
+};
+export const Success = Template.bind({});
+Success.args = {
+  children: "Success",
+  type: "success",
+};
+export const Info = Template.bind({});
+Info.args = {
+  children: "Info",
+  type: "info",
+};
+export const Warn = Template.bind({});
+Warn.args = {
+  children: "Warn",
+  type: "warn",
+};
+export const Error = Template.bind({});
+Error.args = {
+  children: "Error",
+  type: "error",
 };

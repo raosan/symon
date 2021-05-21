@@ -17,40 +17,61 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+import { fromUnixTime, format } from "date-fns";
+import { Button, Layout, Table, Tabs, Title } from "../components";
+import Tag from "../components/tag";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ProbeRequest from "../pages/probe-requests";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
+export default function Index(): JSX.Element {
+  const tabPanes = [
+    { key: "requests", title: "Requests", content: <Requests /> },
+    { key: "alerts", title: "Alerts", content: "Alerts" },
+    { key: "incidents", title: "Incidents", content: "Incidents" },
+    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
+  ];
 
-export const RouterConfig = (): JSX.Element => {
   return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
-      <Route
-        path="/:orgName/:projectID/:probeID/requests"
-        component={ProbeRequest}
-      />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
-    </Switch>
+    <Layout>
+      <div className="flex gap-5">
+        <Title level={4}>Probe 1</Title>
+        <Tag>Online (24 hours)</Tag>
+      </div>
+      <Tabs activeKey="requests" panes={tabPanes} className="mt-12" />
+    </Layout>
   );
-};
+}
+
+function Requests() {
+  const columns = [
+    {
+      title: "Time",
+      key: "timestamp",
+      render: (timestamp: any) =>
+        format(fromUnixTime(timestamp), "MMM dd hh:mm:ss"),
+    },
+    {
+      title: "Response time (ms)",
+      key: "response_time",
+    },
+    {
+      title: "Response size (kB)",
+      key: "response_size",
+    },
+    {
+      title: "Response status",
+      key: "response_status",
+    },
+    {
+      title: "URL",
+      key: "request_url",
+    },
+  ];
+
+  return (
+    <>
+      <Table columns={columns} />
+      <div className="flex mt-20 justify-center">
+        <Button label="Load more" variant="light" />
+      </div>
+    </>
+  );
+}

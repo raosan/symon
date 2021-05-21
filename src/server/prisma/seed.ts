@@ -34,6 +34,51 @@ async function main() {
     },
   });
 
+  await prisma.organization.create({
+    data: {
+      name: "hyperjump",
+      description: "Open source first. Cloud native. DevOps excellence.",
+    },
+  });
+
+  await prisma.project.create({
+    data: {
+      name: "hyperjump",
+      organization_id: 1,
+    },
+  });
+
+  await prisma.probe.create({
+    data: {
+      name: "hyperjump",
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  });
+
+  await prisma.monika.create({
+    data: {
+      hostname: "example.com",
+      instanceId: "southeast-asia-1",
+    },
+  });
+
+  await prisma.report.create({
+    data: {
+      monikaId: 1,
+      configVersion: "1.0.0",
+      monikaInstanceId: "southeast-asia-1",
+    },
+  });
+
+  await prisma.probeRequest.create({
+    data: {
+      url: "http://example.com",
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  });
+
   const configs = [
     { key: "env", value: "development" },
     { key: "jwtSecret", value: "8080" },

@@ -17,40 +17,39 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+type tagType = "success" | "info" | "warn" | "error";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ProbeRequest from "../pages/probe-requests";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
-
-export const RouterConfig = (): JSX.Element => {
-  return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
-      <Route
-        path="/:orgName/:projectID/:probeID/requests"
-        component={ProbeRequest}
-      />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
-    </Switch>
-  );
+export type tagProps = {
+  children?: React.ReactNode;
+  type?: tagType;
 };
+
+export default function Tag({ children, type }: tagProps): JSX.Element {
+  const color = getColorByType(type);
+  const backgroundColor = `bg-${color}-100`;
+  const borderColor = `border-${color}-200`;
+
+  return (
+    <span
+      className={`text-sm sm:text-lg font-medium ${backgroundColor} ${borderColor} py-1 px-2 rounded align-middle`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function getColorByType(type?: tagType): string {
+  switch (type) {
+    case "success":
+      return "green";
+    case "info":
+      return "blue";
+    case "warn":
+      return "yellow";
+    case "error":
+      return "red";
+
+    default:
+      return "gray";
+  }
+}

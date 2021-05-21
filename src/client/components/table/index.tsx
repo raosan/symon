@@ -37,10 +37,11 @@ export default function Table({
   if (isLoading) {
     return <>Loading...</>;
   }
+  const isEmpty = !dataSource || dataSource.length < 1;
 
   return (
     <div className="min-w-full">
-      <table className="block overflow-x-scroll divide-y divide-gray-200">
+      <table className="block overflow-x-auto divide-y divide-gray-200">
         <thead className="bg-gray-50 border-t border-b border-gray-300">
           <tr>
             {columns?.map(column => (
@@ -68,6 +69,16 @@ export default function Table({
               ))}
             </tr>
           ))}
+          {isEmpty && (
+            <tr>
+              <td
+                colSpan={columns?.length}
+                className="px-6 py-4 whitespace-nowrap text-2xl text-gray-500 text-center"
+              >
+                No data
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
