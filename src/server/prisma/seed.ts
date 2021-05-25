@@ -79,6 +79,22 @@ async function main() {
     },
   });
 
+  const reportRequestsSeed = [];
+  for (let i = 0; i < 35; i++) {
+    reportRequestsSeed[i] = prisma.reportRequests.create({
+      data: {
+        reportId: 1,
+        probeId: "sample-probe",
+        requestMethod: "GET",
+        requestUrl: "https://example.com",
+        timestamp: 0,
+        responseStatus: 200,
+        responseTime: 3,
+      },
+    });
+  }
+  await Promise.all(reportRequestsSeed);
+
   const configs = [
     { key: "env", value: "development" },
     { key: "jwtSecret", value: "8080" },

@@ -28,6 +28,7 @@ import probes from "./services/probes";
 import notifications from "./services/notifications";
 import organizations from "./services/organizations";
 import projects from "./services/projects";
+import reportRequests from "./services/report-requests";
 import users from "./services/users";
 
 const router = express.Router();
@@ -51,6 +52,7 @@ router.use(notifications);
 router.use(organizations);
 router.use(locations);
 router.use(projects);
+router.use(reportRequests);
 router.use(apiKeys);
 
 // ********************************

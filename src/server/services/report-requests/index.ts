@@ -17,40 +17,11 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+import { Router } from "express";
+import { index } from "./controller";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ReportReqest from "../pages/report-requests";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
+const router = Router();
 
-export const RouterConfig = (): JSX.Element => {
-  return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
-      <Route
-        path="/:orgName/:projectID/:probeID/report-requests"
-        component={ReportReqest}
-      />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
-    </Switch>
-  );
-};
+router.get("/v1/report-requests", index);
+
+export default router;

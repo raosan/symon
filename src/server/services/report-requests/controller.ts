@@ -17,61 +17,44 @@
  *                                                                                *
  **********************************************************************************/
 
-import { fromUnixTime, format } from "date-fns";
-import { Button, Layout, Table, Tabs, Title } from "../components";
-import Tag from "../components/tag";
+import { NextFunction, Request, Response } from "express";
+import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { generatePrismaArguments } from "../../internal/query-helper";
+import PrismaClient from "../../prisma/prisma-client";
 
-export default function Index(): JSX.Element {
-  const tabPanes = [
-    { key: "requests", title: "Requests", content: <Requests /> },
-    { key: "alerts", title: "Alerts", content: "Alerts" },
-    { key: "incidents", title: "Incidents", content: "Incidents" },
-    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
-  ];
+export async function index(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const { query } = req;
 
-  return (
-    <Layout>
-      <div className="flex gap-5">
-        <Title level={4}>Probe 1</Title>
-        <Tag>Online (24 hours)</Tag>
-      </div>
-      <Tabs activeKey="requests" panes={tabPanes} className="mt-12" />
-    </Layout>
-  );
-}
+  try {
+    const prismaModelQueries = generatePrismaArguments({
+      searchableFields: ["probeName", "requestUrl"],
+      queryArgs: {
+        fields: query?.fields as string,
+        filter: query?.filter as string,
+        limit: query?.limit as string,
+        cursor: query?.cursor as string,
+        search: query?.search as string,
+        sort: query?.sort as string,
+      },
+    });
+    const data = await PrismaClient.reportRequests.findMany(prismaModelQueries);
 
-function Requests() {
-  const columns = [
-    {
-      title: "Time",
-      key: "timestamp",
-      render: (timestamp: any) =>
-        format(fromUnixTime(timestamp), "MMM dd hh:mm:ss"),
-    },
-    {
-      title: "Response time (ms)",
-      key: "response_time",
-    },
-    {
-      title: "Response size (kB)",
-      key: "response_size",
-    },
-    {
-      title: "Response status",
-      key: "response_status",
-    },
-    {
-      title: "URL",
-      key: "request_url",
-    },
-  ];
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully get list of report requests",
+      data,
+    });
+  } catch (err) {
+    const error = new AppError(
+      commonHTTPErrors.unprocessableEntity,
+      err.message,
+      true,
+    );
 
-  return (
-    <>
-      <Table columns={columns} />
-      <div className="flex mt-20 justify-center">
-        <Button label="Load more" variant="light" />
-      </div>
-    </>
-  );
+    next(error);
+  }
 }
