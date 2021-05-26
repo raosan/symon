@@ -32,8 +32,8 @@ COPY src/server src/server
 # Clean install dependencies
 RUN npm ci
 
-# Generate prisma
-RUN npx prisma generate --schema src/server/prisma/schema.prisma
+# Generate prisma and migrate
+RUN npx prisma migrate dev --preview-feature
 
 # Open port 8080
 EXPOSE 8080
