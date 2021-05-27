@@ -18,10 +18,11 @@
  **********************************************************************************/
 
 import { probe } from "@prisma/client";
-import { useEffect } from "react";
 import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
 import { Header, Sidebar } from "../";
 import { fetcher } from "../../data/requests";
+import { ParamTypes } from "../../pages/report";
 import { Endpoint } from "../Sidebar/Sidebar";
 
 type LayoutProps = {
@@ -34,6 +35,8 @@ export default function Layout({
   children,
   isLoading,
 }: LayoutProps): JSX.Element {
+  const { orgName, projectID } = useParams<ParamTypes>();
+
   const { data } = useQuery("getProbes", () =>
     fetcher(`/probes`, {
       method: "GET",
@@ -46,7 +49,10 @@ export default function Layout({
   return (
     <Content
       endpoints={data?.map((item: probe) => {
-        return { to: `/${item.id}`, title: item.name };
+        return {
+          to: `/${orgName}/${projectID}/${item.name}/report`,
+          title: item.name,
+        };
       })}
     >
       {children}

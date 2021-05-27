@@ -23,7 +23,7 @@ import { Layout, Tabs, Tag, Title } from "../../components";
 import ReportRequests from "./requests";
 import ReportAlerts from "./alerts";
 
-type ParamTypes = {
+export type ParamTypes = {
   orgName: string;
   projectID: string;
   probeID: string;
