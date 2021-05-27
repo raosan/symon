@@ -17,50 +17,61 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 
-import Account from "../pages/account";
-import APIKey from "../pages/api-keys";
-import APIKeyByID from "../pages/api-keys/[id]";
-import APIKeyCreate from "../pages/api-keys/create";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Organization from "../pages/Organization";
-import Report from "../pages/report";
-import Project from "../pages/Project";
-import Setup from "../pages/Setup";
-import ProtectedRoute from "./ProtectedRoute";
+import { Layout, Tabs, Tag, Title } from "../../components";
+import ReportRequests from "./requests";
+import ReportAlerts from "./alerts";
 
-export const RouterConfig = (): JSX.Element => {
-  return (
-    <Switch>
-      <Route path="/setup" component={Setup} />
-      <Route path="/login" component={Login} />
-      <ProtectedRoute path="/account" component={Account} />
-      <ProtectedRoute
-        path="/:orgName/:projectID/api-keys"
-        component={APIKey}
-        exact
-      />
-      <ProtectedRoute
-        path="/:orgName/:projectID/api-keys/create"
-        component={APIKeyCreate}
-      />
-      <ProtectedRoute
-        path="/:orgName/:projectID/api-keys/:id"
-        component={APIKeyByID}
-      />
-      <ProtectedRoute
-        path="/:orgName/:projectID/:probeID/report/:category"
-        component={Report}
-      />
-      <Redirect
-        from="/:orgName/:projectID/:probeID/report"
-        to="/:orgName/:projectID/:probeID/report/requests"
-      />
-      <ProtectedRoute path="/:orgName/:projectName" component={Project} />
-      <ProtectedRoute path="/:orgName" component={Organization} />
-      <ProtectedRoute path="/" component={Home} />
-    </Switch>
-  );
+type ParamTypes = {
+  orgName: string;
+  projectID: string;
+  probeID: string;
+  category: string;
 };
+
+export default function Index(): JSX.Element {
+  const history = useHistory();
+  const { orgName, projectID, probeID, category } = useParams<ParamTypes>();
+
+  const tabPanes = [
+    {
+      key: "requests",
+      title: "Requests",
+      content: <ReportRequests probeID={probeID} />,
+    },
+    {
+      key: "alerts",
+      title: "Alerts",
+      content: <ReportAlerts probeID={probeID} />,
+    },
+    { key: "incidents", title: "Incidents", content: "Incidents" },
+    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
+  ];
+
+  if (!tabPanes.map(t => t.key).includes(category))
+    return (
+      <Redirect
+        to={`/${orgName}/${projectID}/${probeID}/report/${tabPanes[0].key}`}
+      />
+    );
+
+  const changeTab = (key: string) => {
+    history.push(`/${orgName}/${projectID}/${probeID}/report/${key}`);
+  };
+
+  return (
+    <Layout>
+      <div className="flex gap-5">
+        <Title level={4}>Probe 1</Title>
+        <Tag>Online (24 hours)</Tag>
+      </div>
+      <Tabs
+        activeKey={category}
+        onChange={changeTab}
+        panes={tabPanes}
+        className="mt-12"
+      />
+    </Layout>
+  );
+}

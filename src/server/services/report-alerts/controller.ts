@@ -17,6 +17,45 @@
  *                                                                                *
  **********************************************************************************/
 
-import { FC } from "react";
+import { NextFunction, Request, Response } from "express";
+import { AppError, commonHTTPErrors } from "../../internal/app-error";
+import { generatePrismaArguments } from "../../internal/query-helper";
+import PrismaClient from "../../prisma/prisma-client";
 
-export const Probe: FC = () => <div>Probe Page</div>;
+export async function index(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const { query } = req;
+
+  try {
+    const prismaModelQueries = generatePrismaArguments({
+      searchableFields: ["alert"],
+      queryArgs: {
+        fields: query?.fields as string,
+        filter: query?.filter as string,
+        limit: query?.limit as string,
+        cursor: query?.cursor as string,
+        search: query?.search as string,
+        sort: query?.sort as string,
+      },
+    });
+    const data = await PrismaClient.reportRequestAlerts.findMany(
+      prismaModelQueries,
+    );
+
+    res.status(200).send({
+      message: "Successfully get list of report alerts",
+      data,
+    });
+  } catch (err) {
+    const error = new AppError(
+      commonHTTPErrors.unprocessableEntity,
+      err.message,
+      true,
+    );
+
+    next(error);
+  }
+}
