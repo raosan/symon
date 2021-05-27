@@ -27,6 +27,7 @@ COPY postcss.config.js .
 COPY tailwind.config.js .
 COPY tsconfig.json .
 COPY webpack.config.js .
+COPY config/nginx.conf .
 
 # Copy the client code
 RUN mkdir src
@@ -38,7 +39,16 @@ RUN npm run client:build
 
 # Stage 2: Deploy
 FROM nginx:stable
+
+# Copy the built frontend to the nginx directory
 COPY --from=build /usr/app/symon/dist /usr/share/nginx/html
+
+# Delete default nginx configuration and replace it with the new one
+RUN rm -rf /etc/nginx/conf.d/*
+COPY --from=build /usr/app/symon/nginx.conf /etc/nginx/conf.d/nginx.conf
+
+# Expose to port 80
 EXPOSE 80
 
+# Run using nginx daemon
 CMD ["nginx", "-g", "daemon off;"]
