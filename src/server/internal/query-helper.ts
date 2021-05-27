@@ -197,12 +197,12 @@ function generateFilter(where?: string) {
 
         return `${acc} ${curr}`;
       }, "");
-    const filter: Record<string, unknown> = {};
     const operatorValue: Record<string, unknown> = {};
 
     // TODO: Change value based on data type
     operatorValue[operator] = transformFilterValue(value);
-    filter[field] = operatorValue;
+
+    const filter = createObjectFromBracketNotation(field, operatorValue);
 
     return filter;
   });
@@ -223,6 +223,65 @@ function transformFilterValue(value: string) {
   }
 
   return value;
+}
+
+// simplified from https://github.com/ljharb/qs/blob/master/lib/parse.js
+function createObjectFromBracketNotation(
+  key: string,
+  val: unknown,
+  options = { depth: 5 },
+) {
+  if (!key) {
+    return;
+  }
+
+  // The regex chunks
+  const brackets = /(\[[^[\]]*])/;
+  const child = /(\[[^[\]]*])/g;
+
+  // Get the parent
+  let segment = brackets.exec(key);
+  const parent = segment ? key.slice(0, segment.index) : key;
+
+  // Stash the parent if it exists
+  const keys = [];
+  if (parent) {
+    keys.push(parent);
+  }
+
+  // Loop through children appending to the array until we hit depth
+  let i = 0;
+  while (
+    options.depth > 0 &&
+    (segment = child.exec(key)) !== null &&
+    i < options.depth
+  ) {
+    i += 1;
+    keys.push(segment[1]);
+  }
+
+  // If there's a remainder, just add whatever is left
+  if (segment) {
+    keys.push("[" + key.slice(segment.index) + "]");
+  }
+
+  let leaf = val;
+
+  for (let i = keys.length - 1; i >= 0; --i) {
+    const obj = {} as Record<string, unknown>;
+    const root = keys[i];
+
+    const cleanRoot =
+      root.charAt(0) === "[" && root.charAt(root.length - 1) === "]"
+        ? root.slice(1, -1)
+        : root;
+
+    obj[cleanRoot] = leaf;
+
+    leaf = obj;
+  }
+
+  return leaf;
 }
 
 function generateSearch(

@@ -18,46 +18,15 @@
  **********************************************************************************/
 
 import { fromUnixTime, format } from "date-fns";
-import { useParams } from "react-router-dom";
 import { useInfiniteQuery } from "react-query";
-import { Alert, Button, Layout, Table, Tabs, Title } from "../components";
-import { fetcher } from "../data/requests";
-import Tag from "../components/tag";
-
-type paramTypes = {
-  orgName: string;
-  probeID: string;
-};
+import { Alert, Button, Table } from "../../components";
+import { fetcher } from "../../data/requests";
 
 type requestProps = {
   probeID: string;
 };
 
-export default function Index(): JSX.Element {
-  const { probeID } = useParams<paramTypes>();
-  const tabPanes = [
-    {
-      key: "requests",
-      title: "Requests",
-      content: <Requests probeID={probeID} />,
-    },
-    { key: "alerts", title: "Alerts", content: "Alerts" },
-    { key: "incidents", title: "Incidents", content: "Incidents" },
-    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
-  ];
-
-  return (
-    <Layout>
-      <div className="flex gap-5">
-        <Title level={4}>Probe {probeID}</Title>
-        <Tag>Online (24 hours)</Tag>
-      </div>
-      <Tabs activeKey="requests" panes={tabPanes} className="mt-12" />
-    </Layout>
-  );
-}
-
-function Requests({ probeID }: requestProps) {
+export default function Requests({ probeID }: requestProps): JSX.Element {
   const limit = 30;
   const fetchReportRequests = ({ pageParam = "" }) =>
     fetcher(
@@ -80,7 +49,7 @@ function Requests({ probeID }: requestProps) {
     {
       title: "Time",
       key: "timestamp",
-      render: (timestamp: any) =>
+      render: (timestamp: number) =>
         format(fromUnixTime(timestamp), "MMM dd hh:mm:ss"),
     },
     {

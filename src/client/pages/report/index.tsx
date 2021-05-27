@@ -17,16 +17,61 @@
  *                                                                                *
  **********************************************************************************/
 
-// layout
-export { default as Layout } from "./layout";
-export { default as Header } from "./Header";
-export { default as Sidebar } from "./Sidebar";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 
-export { default as Alert } from "./alert";
-export { default as Button } from "./Button";
-export { default as Form } from "./form";
-export { default as Input } from "./Input";
-export { default as Table } from "./table";
-export { default as Tabs } from "./tabs";
-export { default as Title } from "./title";
-export { default as Tag } from "./tag";
+import { Layout, Tabs, Tag, Title } from "../../components";
+import ReportRequests from "./requests";
+import ReportAlerts from "./alerts";
+
+type ParamTypes = {
+  orgName: string;
+  projectID: string;
+  probeID: string;
+  category: string;
+};
+
+export default function Index(): JSX.Element {
+  const history = useHistory();
+  const { orgName, projectID, probeID, category } = useParams<ParamTypes>();
+
+  const tabPanes = [
+    {
+      key: "requests",
+      title: "Requests",
+      content: <ReportRequests probeID={probeID} />,
+    },
+    {
+      key: "alerts",
+      title: "Alerts",
+      content: <ReportAlerts probeID={probeID} />,
+    },
+    { key: "incidents", title: "Incidents", content: "Incidents" },
+    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
+  ];
+
+  if (!tabPanes.map(t => t.key).includes(category))
+    return (
+      <Redirect
+        to={`/${orgName}/${projectID}/${probeID}/report/${tabPanes[0].key}`}
+      />
+    );
+
+  const changeTab = (key: string) => {
+    history.push(`/${orgName}/${projectID}/${probeID}/report/${key}`);
+  };
+
+  return (
+    <Layout>
+      <div className="flex gap-5">
+        <Title level={4}>Probe 1</Title>
+        <Tag>Online (24 hours)</Tag>
+      </div>
+      <Tabs
+        activeKey={category}
+        onChange={changeTab}
+        panes={tabPanes}
+        className="mt-12"
+      />
+    </Layout>
+  );
+}

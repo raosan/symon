@@ -85,6 +85,34 @@ describe("Query helper", () => {
     expect(prismaArguments).toStrictEqual(expectedResult);
   });
 
+  it("should generate arguments with nested object filter", async () => {
+    // arrange
+    const expectedResult = {
+      where: {
+        AND: [
+          {
+            name: {
+              first: {
+                equals: "john",
+              },
+            },
+          },
+        ],
+      },
+      take: 10,
+    };
+
+    // act
+    const prismaArguments = generatePrismaArguments({
+      queryArgs: {
+        filter: "name[first] equals john",
+      },
+    });
+
+    // assert
+    expect(prismaArguments).toStrictEqual(expectedResult);
+  });
+
   it("should generate arguments with search", async () => {
     // arrange
     const expectedResult = {

@@ -17,4 +17,11 @@
  *                                                                                *
  **********************************************************************************/
 
-export { Probe as default } from "./Probe";
+import { Router } from "express";
+import { index } from "./controller";
+
+const router = Router();
+
+router.get("/v1/report-alerts", index);
+
+export default router;

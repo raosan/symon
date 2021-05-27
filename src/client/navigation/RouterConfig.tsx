@@ -17,7 +17,7 @@
  *                                                                                *
  **********************************************************************************/
 
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import Account from "../pages/account";
 import APIKey from "../pages/api-keys";
@@ -26,8 +26,7 @@ import APIKeyCreate from "../pages/api-keys/create";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Organization from "../pages/Organization";
-import Probe from "../pages/Probe";
-import ReportReqest from "../pages/report-requests";
+import Report from "../pages/report";
 import Project from "../pages/Project";
 import Setup from "../pages/Setup";
 
@@ -43,10 +42,13 @@ export const RouterConfig = (): JSX.Element => {
         component={APIKeyCreate}
       />
       <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route path="/:orgName/:projectName/:probeName" component={Probe} exact />
       <Route
-        path="/:orgName/:projectID/:probeID/report-requests"
-        component={ReportReqest}
+        path="/:orgName/:projectID/:probeID/report/:category"
+        component={Report}
+      />
+      <Redirect
+        from="/:orgName/:projectID/:probeID/report"
+        to="/:orgName/:projectID/:probeID/report/requests"
       />
       <Route path="/:orgName/:projectName" component={Project} />
       <Route path="/:orgName" component={Organization} />

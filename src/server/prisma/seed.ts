@@ -95,6 +95,17 @@ async function main() {
   }
   await Promise.all(reportRequestsSeed);
 
+  const reportRequestsAlertsSeed = [];
+  for (let i = 0; i < 35; i++) {
+    reportRequestsAlertsSeed[i] = prisma.reportRequestAlerts.create({
+      data: {
+        reportRequestId: 1,
+        alert: "response-time-greater-than-2-s",
+      },
+    });
+  }
+  await Promise.all(reportRequestsAlertsSeed);
+
   const configs = [
     { key: "env", value: "development" },
     { key: "jwtSecret", value: "8080" },

@@ -29,6 +29,7 @@ import notifications from "./services/notifications";
 import organizations from "./services/organizations";
 import projects from "./services/projects";
 import reportRequests from "./services/report-requests";
+import reportAlerts from "./services/report-alerts";
 import users from "./services/users";
 
 const router = express.Router();
@@ -53,6 +54,7 @@ router.use(organizations);
 router.use(locations);
 router.use(projects);
 router.use(reportRequests);
+router.use(reportAlerts);
 router.use(apiKeys);
 
 // ********************************
