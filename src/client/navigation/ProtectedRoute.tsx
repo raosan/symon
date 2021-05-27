@@ -5,7 +5,10 @@ interface Props extends RouteProps {
   component: React.FC;
 }
 
-const ProtectedRoute: React.FC<Props> = ({ component, ...restOfProps }) => {
+const ProtectedRoute: React.FC<Props> = ({
+  component: Component,
+  ...restOfProps
+}) => {
   const isAuthenticated = window.localStorage.getItem("at") || "";
 
   return (
@@ -13,7 +16,7 @@ const ProtectedRoute: React.FC<Props> = ({ component, ...restOfProps }) => {
       {...restOfProps}
       render={({ location }) => {
         return isAuthenticated ? (
-          component
+          <Component />
         ) : (
           <Redirect
             to={{

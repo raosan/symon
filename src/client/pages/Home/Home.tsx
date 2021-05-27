@@ -18,5 +18,12 @@
  **********************************************************************************/
 
 import { FC } from "react";
+import { Layout } from "../../components";
 
-export const Home: FC = () => <div>Hello Symon</div>;
+export const Home: FC = () => {
+  return (
+    <Layout>
+      <div>Home</div>
+    </Layout>
+  );
+};

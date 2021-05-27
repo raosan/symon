@@ -17,27 +17,47 @@
  *                                                                                *
  **********************************************************************************/
 
+import { probe } from "@prisma/client";
+import { useEffect } from "react";
+import { useQuery } from "react-query";
 import { Header, Sidebar } from "../";
+import { fetcher } from "../../data/requests";
+import { Endpoint } from "../Sidebar/Sidebar";
 
 type LayoutProps = {
   children?: React.ReactNode;
   isLoading?: boolean;
+  endpoints?: Endpoint[];
 };
 
 export default function Layout({
   children,
   isLoading,
 }: LayoutProps): JSX.Element {
+  const { data } = useQuery("getProbes", () =>
+    fetcher(`/probes`, {
+      method: "GET",
+    }),
+  );
+
   if (isLoading) {
     return <Content>Loading...</Content>;
   }
-  return <Content>{children}</Content>;
+  return (
+    <Content
+      endpoints={data?.map((item: probe) => {
+        return { to: `/${item.id}`, title: item.name };
+      })}
+    >
+      {children}
+    </Content>
+  );
 }
 
-function Content({ children }: LayoutProps): JSX.Element {
+function Content({ children, endpoints }: LayoutProps): JSX.Element {
   return (
     <main className="flex items-start justify-between overflow-hidden">
-      <Sidebar />
+      <Sidebar endpoints={endpoints} />
       <div className="w-full sm:w-9/12 xl:w-10/12">
         <Header />
         <div className="container mx-auto px-4 py-5 sm:px-6 lg:px-7">
