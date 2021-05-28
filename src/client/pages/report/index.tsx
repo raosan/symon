@@ -24,7 +24,7 @@ import ReportRequests from "./requests";
 import ReportAlerts from "./alerts";
 import ReportIncidents from "./incidents";
 
-type ParamTypes = {
+export type ParamTypes = {
   orgName: string;
   projectID: string;
   probeID: string;

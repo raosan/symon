@@ -18,10 +18,35 @@
  **********************************************************************************/
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import App from "./App";
+import { Redirect, Route, RouteProps } from "react-router-dom";
 
-it("renders welcome message", () => {
-  render(<App />);
-  expect(screen.getByText("Create new user")).toBeInTheDocument();
-});
+interface Props extends RouteProps {
+  component: React.FC;
+}
+
+const ProtectedRoute: React.FC<Props> = ({
+  component: Component,
+  ...restOfProps
+}) => {
+  const isAuthenticated = window.localStorage.getItem("at") || "";
+
+  return (
+    <Route
+      {...restOfProps}
+      render={({ location }) => {
+        return isAuthenticated ? (
+          <Component />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location },
+            }}
+          />
+        );
+      }}
+    />
+  );
+};
+
+export default ProtectedRoute;

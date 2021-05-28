@@ -50,7 +50,7 @@ async function main() {
 
   await prisma.probe.create({
     data: {
-      name: "hyperjump",
+      name: "sample-probe",
       createdAt: 0,
       updatedAt: 0,
     },

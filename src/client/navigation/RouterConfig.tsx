@@ -29,20 +29,28 @@ import Organization from "../pages/Organization";
 import Report from "../pages/report";
 import Project from "../pages/Project";
 import Setup from "../pages/Setup";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const RouterConfig = (): JSX.Element => {
   return (
     <Switch>
       <Route path="/setup" component={Setup} />
       <Route path="/login" component={Login} />
-      <Route path="/account" component={Account} />
-      <Route path="/:orgName/:projectID/api-keys" component={APIKey} exact />
-      <Route
+      <ProtectedRoute path="/account" component={Account} />
+      <ProtectedRoute
+        path="/:orgName/:projectID/api-keys"
+        component={APIKey}
+        exact
+      />
+      <ProtectedRoute
         path="/:orgName/:projectID/api-keys/create"
         component={APIKeyCreate}
       />
-      <Route path="/:orgName/:projectID/api-keys/:id" component={APIKeyByID} />
-      <Route
+      <ProtectedRoute
+        path="/:orgName/:projectID/api-keys/:id"
+        component={APIKeyByID}
+      />
+      <ProtectedRoute
         path="/:orgName/:projectID/:probeID/report/:category"
         component={Report}
       />
@@ -50,9 +58,9 @@ export const RouterConfig = (): JSX.Element => {
         from="/:orgName/:projectID/:probeID/report"
         to="/:orgName/:projectID/:probeID/report/requests"
       />
-      <Route path="/:orgName/:projectName" component={Project} />
-      <Route path="/:orgName" component={Organization} />
-      <Route path="/" component={Home} />
+      <ProtectedRoute path="/:orgName/:projectName" component={Project} />
+      <ProtectedRoute path="/:orgName" component={Organization} />
+      <ProtectedRoute path="/" component={Home} />
     </Switch>
   );
 };
