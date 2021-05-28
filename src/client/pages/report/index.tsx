@@ -23,6 +23,7 @@ import { Layout, Tabs, Tag, Title } from "../../components";
 import ReportRequests from "./requests";
 import ReportAlerts from "./alerts";
 import ReportIncidents from "./incidents";
+import ReportRecoveries from "./recoveries";
 
 export type ParamTypes = {
   orgName: string;
@@ -51,7 +52,11 @@ export default function Index(): JSX.Element {
       title: "Incidents",
       content: <ReportIncidents probeID={probeID} />,
     },
-    { key: "recoveries", title: "Recoveries", content: "Recoveries" },
+    {
+      key: "recoveries",
+      title: "Recoveries",
+      content: <ReportRecoveries probeID={probeID} />,
+    },
   ];
 
   if (!tabPanes.map(t => t.key).includes(category))
