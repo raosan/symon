@@ -32,9 +32,14 @@ COPY config/nginx.conf .
 # Copy the client code
 RUN mkdir src
 COPY src/client src/client
+COPY src/server/prisma src/server/prisma
 
 # Build the frontend
 RUN npm ci
+
+# Generate prisma and migrate
+RUN npx prisma migrate dev --preview-feature
+
 RUN npm run client:build
 
 # Stage 2: Deploy
