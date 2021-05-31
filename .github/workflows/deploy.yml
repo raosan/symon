@@ -30,9 +30,23 @@ jobs:
       - name: Run dynamic analysis
         run: npm run dynamic-analysis
       - name: Build Client Image with Docker
-        run: docker build -f Dockerfile.client . -t dokku/frontend:$(git rev-parse --short HEAD)
+        run: |
+          docker build --build-arg NODE_ENV=${{ secrets.NODE_ENV }} \
+            --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} \
+            --build-arg REACT_APP_API_PREFIX=${{ secrets.REACT_APP_API_PREFIX }} \
+            -f Dockerfile.client . -t dokku/frontend:$(git rev-parse --short HEAD)
       - name: Build Server Image with Docker
-        run: docker build -f Dockerfile.server . -t dokku/api:$(git rev-parse --short HEAD)
+        run: |
+          docker build --build-arg NODE_ENV=${{ secrets.NODE_ENV }} \
+            --build-arg PORT=${{ secrets.PORT }} \
+            --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --build-arg JWT_ISSUER=${{ secrets.JWT_ISSUER }} \
+            --build-arg JWT_ACCESS_EXPIRED=${{ secrets.JWT_ACCESS_EXPIRED }} \
+            --build-arg JWT_REFRESH_EXPIRED=${{ secrets.JWT_REFRESH_EXPIRED }} \
+            --build-arg JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }} \
+            -f Dockerfile.server . -t dokku/api:$(git rev-parse --short HEAD)
       - name: "Create SSH Folder"
         run: mkdir -p ~/.ssh/
       - name: "Create SSH Public Key from Azure Pipelines Variables"

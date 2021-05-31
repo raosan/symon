@@ -16,11 +16,16 @@
 
 FROM node:lts as build
 
+# Get ENV variable from ARG
+ARG NODE_ENV
+ARG DATABASE_URL
+ARG REACT_APP_API_URL
+ARG REACT_APP_API_PREFIX
+
 WORKDIR /usr/app/symon
 
 # Stage 1: Build
 # Copy files needed
-COPY .env.example .env
 COPY package-lock.json .
 COPY package.json .
 COPY postcss.config.js .
@@ -35,7 +40,7 @@ COPY src/client src/client
 COPY src/server/prisma src/server/prisma
 
 # Build the frontend
-RUN npm ci
+RUN npm ci --also=dev
 
 # Generate prisma and migrate
 RUN npx prisma migrate dev --preview-feature
