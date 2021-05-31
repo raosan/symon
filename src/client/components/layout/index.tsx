@@ -17,7 +17,7 @@
  *                                                                                *
  **********************************************************************************/
 
-import { probe } from "@prisma/client";
+import { reportRequests } from "@prisma/client";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { Header, Sidebar } from "../";
@@ -38,7 +38,7 @@ export default function Layout({
   const { orgName, projectID } = useParams<ParamTypes>();
 
   const { data } = useQuery("getProbes", () =>
-    fetcher(`/probes`, {
+    fetcher(`/report-probes`, {
       method: "GET",
     }),
   );
@@ -48,10 +48,10 @@ export default function Layout({
   }
   return (
     <Content
-      endpoints={data?.map((item: probe) => {
+      endpoints={(data?.data ?? []).map((item: reportRequests) => {
         return {
-          to: `/${orgName}/${projectID}/${item.name}/report`,
-          title: item.name,
+          to: `/${orgName}/${projectID}/${item.probeId}/report`,
+          title: item.probeName || item.probeId,
         };
       })}
     >

@@ -63,7 +63,7 @@ describe("Report request service", () => {
     {
       id: 3,
       reportId: 2,
-      probeId: "2 GET example.com",
+      probeId: "GET example.com",
       requestMethod: "GET",
       requestUrl: "http://example.com",
       timestamp: 0,
@@ -126,6 +126,41 @@ describe("Report request service", () => {
       expect(res.status).toEqual(200);
       expect(res.body.data).toEqual(reportRequestData);
 
+      done();
+    });
+  });
+
+  describe("GET /v1/report-probes", () => {
+    it("should return http status code 200", async done => {
+      const distinctProbes = Array.from(
+        new Set(reportRequestData.map(row => row.probeId)),
+      ).map(probeId => ({ probeId }));
+
+      mockfindMany.mockImplementationOnce(async () => distinctProbes);
+
+      // act
+      const res = await request(app).get("/v1/report-probes");
+
+      // assert
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toEqual(distinctProbes);
+
+      done();
+    });
+
+    it("should return http status code 422", async done => {
+      // arrange
+      mockfindMany.mockImplementationOnce(
+        async (): Promise<reportRequests[]> => {
+          throw new Error("query error");
+        },
+      );
+
+      // act
+      const res = await request(app).get("/v1/report-probes");
+
+      // assert
+      expect(res.status).toBe(422);
       done();
     });
   });

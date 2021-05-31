@@ -52,7 +52,7 @@ export const Sidebar: FC<SidebarProps> = ({ endpoints = exampleEndpoints }) => {
       <div className="w-28 mt-2 mb-8">
         <Logo transparent />
       </div>
-      <SidebarGroup title="Endpoints">
+      <SidebarGroup title="Probes">
         {endpoints.map(endpoint => (
           <SidebarGroupItem
             key={endpoint.to}

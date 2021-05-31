@@ -22,7 +22,7 @@ import { AppError, commonHTTPErrors } from "../../internal/app-error";
 import { generatePrismaArguments } from "../../internal/query-helper";
 import PrismaClient from "../../prisma/prisma-client";
 
-export async function index(
+export async function findRequests(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -46,6 +46,33 @@ export async function index(
     res.status(200).send({
       result: "SUCCESS",
       message: "Successfully get list of report requests",
+      data,
+    });
+  } catch (err) {
+    const error = new AppError(
+      commonHTTPErrors.unprocessableEntity,
+      err.message,
+      true,
+    );
+
+    next(error);
+  }
+}
+
+export async function findDistinctProbes(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const data = await PrismaClient.reportRequests.findMany({
+      select: { probeId: true, probeName: true },
+      distinct: ["probeId"],
+    });
+
+    res.status(200).send({
+      result: "SUCCESS",
+      message: "Successfully get list of report probes",
       data,
     });
   } catch (err) {

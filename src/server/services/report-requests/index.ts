@@ -18,10 +18,11 @@
  **********************************************************************************/
 
 import { Router } from "express";
-import { index } from "./controller";
+import { findRequests, findDistinctProbes } from "./controller";
 
 const router = Router();
 
-router.get("/v1/report-requests", index);
+router.get("/v1/report-probes", findDistinctProbes);
+router.get("/v1/report-requests", findRequests);
 
 export default router;
