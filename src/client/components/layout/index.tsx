@@ -71,7 +71,7 @@ function Content({
   return (
     <main className="flex items-start justify-between overflow-hidden">
       <Sidebar orgName={orgName} projectID={projectID} endpoints={endpoints} />
-      <div className="w-full sm:w-9/12 xl:w-10/12">
+      <div className="pl-64 w-full">
         <Header />
         <div className="container mx-auto px-4 py-5 sm:px-6 lg:px-7">
           {children}
