@@ -14,17 +14,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM node:lts as build
+FROM node:lts-alpine as build
 
-# Get ENV variable from ARG
-ARG NODE_ENV
-ARG DATABASE_URL
-ARG REACT_APP_API_URL
-ARG REACT_APP_API_PREFIX
+# Stage 1: Build
+# Get build args
+ARG NODE_ENV="production"
+ARG DATABASE_URL="file:./dev.db"
+ARG REACT_APP_API_URL="http://localhost:8080"
+ARG REACT_APP_API_PREFIX="/v1"
+
+# Set ENV from ARG
+ENV NODE_ENV ${NODE_ENV}
+ENV DATABASE_URL ${DATABASE_URL}
+ENV REACT_APP_API_URL ${REACT_APP_API_URL}
+ENV REACT_APP_API_PREFIX ${REACT_APP_API_PREFIX}
 
 WORKDIR /usr/app/symon
 
-# Stage 1: Build
 # Copy files needed
 COPY package-lock.json .
 COPY package.json .
