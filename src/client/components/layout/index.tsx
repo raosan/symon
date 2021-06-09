@@ -19,10 +19,8 @@
 
 import { reportRequests } from "@prisma/client";
 import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
 import { Header, Sidebar } from "../";
 import { fetcher } from "../../data/requests";
-import { ParamTypes } from "../../pages/report";
 import { SidebarProps } from "../Sidebar/Sidebar";
 
 type LayoutProps = {
