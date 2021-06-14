@@ -21,14 +21,14 @@ jobs:
           username: ${{secrets.HYPERJUMP_DOCKER_USERNAME}}
           password: ${{secrets.HYPERJUMP_DOCKER_PASSWORD}}
       - name: Build and push API
-        id: docker_build
+        id: docker_build_api
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: hyperjump/symon-api:latest
           file: "Dockerfile.server"
       - name: Build and push Frontend
-        id: docker_build
+        id: docker_build_fe
         uses: docker/build-push-action@v2
         with:
           push: true
