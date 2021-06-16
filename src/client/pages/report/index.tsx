@@ -73,15 +73,17 @@ export default function Index(): JSX.Element {
 
   return (
     <Layout>
-      <div className="flex gap-5">
-        <Title level={4}>Probe 1</Title>
+      <div className="flex justify-start items-center">
+        <Title level={4} className="mr-2">
+          Probe 1
+        </Title>
         <Tag>Online (24 hours)</Tag>
       </div>
       <Tabs
         activeKey={category}
         onChange={changeTab}
         panes={tabPanes}
-        className="mt-12"
+        className="mt-6"
       />
     </Layout>
   );

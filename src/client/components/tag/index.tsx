@@ -31,7 +31,7 @@ export default function Tag({ children, type }: tagProps): JSX.Element {
 
   return (
     <span
-      className={`text-sm sm:text-lg font-medium ${backgroundColor} ${borderColor} py-1 px-2 rounded align-middle`}
+      className={`flex justify-center items-center p-2 font-medium ${backgroundColor} ${borderColor} rounded`}
     >
       {children}
     </span>

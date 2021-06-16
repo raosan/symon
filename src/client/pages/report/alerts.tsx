@@ -90,11 +90,13 @@ export default function ReportAlerts({
       key: "alert",
     },
     {
-      title: "Response time (ms)",
+      title: "Response Time (ms)",
       key: "responseTime",
+      render: (responseTime: number) =>
+        new Intl.NumberFormat().format(responseTime),
     },
     {
-      title: "Response status",
+      title: "Response Status",
       key: "responseStatus",
     },
   ];

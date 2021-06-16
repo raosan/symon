@@ -17,12 +17,19 @@
  *                                                                                *
  **********************************************************************************/
 
-export type titleProps = {
+import { FunctionComponent } from "react";
+
+export type TitleProps = {
   level?: 1 | 2 | 3 | 4 | 5;
+  className?: string;
   children: React.ReactNode;
 };
 
-export default function Title({ level, children }: titleProps): JSX.Element {
+const Title: FunctionComponent<TitleProps> = ({
+  level,
+  children,
+  className,
+}) => {
   const fontSizeClasses = [
     { level: 1, className: "text-5xl" },
     { level: 2, className: "text-4xl" },
@@ -31,16 +38,14 @@ export default function Title({ level, children }: titleProps): JSX.Element {
     { level: 5, className: "text-xl" },
   ];
 
+  const fontSizeClassName =
+    fontSizeClasses.find(fsc => fsc.level === level)?.className ?? "text-5xl";
+
   return (
-    <h1
-      className={`
-        ${
-          fontSizeClasses.find(fsc => fsc.level === level)?.className ??
-          "text-5xl"
-        } font-bold mb-2
-      `}
-    >
+    <h1 className={`${fontSizeClassName} ${className} font-bold`}>
       {children}
     </h1>
   );
-}
+};
+
+export default Title;

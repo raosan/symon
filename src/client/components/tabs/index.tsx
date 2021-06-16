@@ -49,21 +49,20 @@ export default function Tabs({
       <nav className="flex flex-col sm:flex-row border-b border-gray-400">
         {panes.map(({ key, title }: pane) => {
           const isActive = internalActiveKey === key;
+          const activeClassname = isActive ? "font-bold" : "text-gray-500";
 
           return (
             <button
               key={key}
               onClick={() => handleClick(key)}
-              className={`text-sm sm:text-2xl py-4 pr-6 block hover:text-black focus:outline-none ${
-                isActive ? "font-medium" : "text-gray-500"
-              }`}
+              className={`text-lg py-4 pr-6 hover:text-black focus:outline-none ${activeClassname}`}
             >
               {title}
             </button>
           );
         })}
       </nav>
-      <div className="mt-20">
+      <div>
         {panes.find(({ key }: pane) => key === internalActiveKey)?.content}
       </div>
     </div>

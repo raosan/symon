@@ -37,18 +37,16 @@ export default function Table({
   if (isLoading) {
     return <>Loading...</>;
   }
+
   const isEmpty = !dataSource || dataSource.length < 1;
 
   return (
-    <div className="min-w-full">
-      <table className="block overflow-x-auto divide-y divide-gray-200">
-        <thead className="bg-gray-50 border-t border-b border-gray-300">
+    <div>
+      <table className="w-full overflow-x-auto divide-y divide-gray-200">
+        <thead className="bg-gray-50 border-b border-gray-300">
           <tr>
             {columns?.map(column => (
-              <th
-                key={column.key}
-                className="px-6 py-3 text-left text-2xl text-gray-400 tracking-wider w-full"
-              >
+              <th key={column.key} className="p-4 text-left text-gray-400">
                 {column.title}
               </th>
             ))}
@@ -60,7 +58,7 @@ export default function Table({
               {columns?.map(column => (
                 <td
                   key={column.key}
-                  className="px-6 py-4 whitespace-nowrap text-2xl text-gray-500"
+                  className="p-4 text-left whitespace-nowrap text-gray-500"
                 >
                   {column?.render
                     ? column.render(row[column.key], row)
@@ -73,7 +71,7 @@ export default function Table({
             <tr>
               <td
                 colSpan={columns?.length}
-                className="px-6 py-4 whitespace-nowrap text-2xl text-gray-500 text-center"
+                className="px-6 py-4 whitespace-nowrap text-gray-500 text-center"
               >
                 No data
               </td>

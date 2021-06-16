@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 import { Story, Meta } from "@storybook/react";
-import Title, { titleProps } from ".";
+import Title, { TitleProps } from ".";
 
 export default {
   title: "Title",
@@ -33,7 +33,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story<titleProps> = args => (
+const Template: Story<TitleProps> = args => (
   <Title {...args}>{args.children}</Title>
 );
 

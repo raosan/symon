@@ -53,15 +53,19 @@ export default function Requests({ probeID }: requestProps): JSX.Element {
         format(fromUnixTime(timestamp), "MMM dd hh:mm:ss"),
     },
     {
-      title: "Response time (ms)",
+      title: "Response Time (ms)",
       key: "responseTime",
+      render: (responseTime: number) =>
+        new Intl.NumberFormat().format(responseTime),
     },
     {
-      title: "Response size (kB)",
+      title: "Response Size (kB)",
       key: "responseSize",
+      render: (responseSize: number) =>
+        new Intl.NumberFormat().format(responseSize),
     },
     {
-      title: "Response status",
+      title: "Response Status",
       key: "responseStatus",
     },
     {
